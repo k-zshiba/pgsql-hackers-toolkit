@@ -1,0 +1,15 @@
+$schema: https://microsoft.github.io/apm/specs/schemas/manifest-v0.1.41.schema.json
+name: pgsql-hackers-toolkit
+version: 0.1.0
+description: Evidence-driven workflows for AI-assisted PostgreSQL upstream/core development.
+author: pgsql-hackers-toolkit contributors
+license: PostgreSQL
+type: hybrid
+includes:
+  - .apm/instructions/
+  - .apm/skills/
+targets:
+  - codex
+  - claude
+  - agent-skills
+dependencies: {}

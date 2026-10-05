@@ -1,0 +1,6 @@
+name: pg-codex-workspace
+version: 0.1.0
+targets: [codex]
+dependencies:
+  apm:
+    - k-zshiba/pgsql-hackers-toolkit#v0.1.0
