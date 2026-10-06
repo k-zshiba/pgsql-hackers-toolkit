@@ -1,0 +1,2 @@
+# Maintainer tool only; not an APM artifact dependency.
+apm-cli==0.33.0

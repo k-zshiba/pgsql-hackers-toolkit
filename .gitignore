@@ -1,0 +1,19 @@
+# APM deployment is generated from .apm/, never authored here.
+/apm_modules/
+/AGENTS.md
+/CLAUDE.md
+/.agents/
+/.claude/
+/.codex/
+/.claude-plugin/
+/.codex-plugin/
+/plugin.json
+/build/
+/dist/
+
+# Maintainer tools and local evaluation results.
+/.venv/
+__pycache__/
+*.pyc
+/evals/observations*.json
+/evals/results*.json

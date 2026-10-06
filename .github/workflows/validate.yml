@@ -1,0 +1,72 @@
+name: Validate toolkit
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      observations:
+        description: Optional complete JSON observations from reviewed live-agent eval traces
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - run: python -m pip install -r requirements-dev.txt
+      - name: Structure, real APM consumer tests and eval contract tests
+        run: python -m unittest discover -s tests -v
+      - run: python evals/grade.py --validate
+      - name: Frozen install, compilation, audit and archive in isolated source
+        shell: bash
+        run: |
+          scratch_dir=$(mktemp -d)
+          mkdir -p "$scratch_dir/package" "$scratch_dir/state"
+          cp apm.yml apm.lock.yaml README.md LICENSE CHANGELOG.md "$scratch_dir/package/"
+          cp -R .apm "$scratch_dir/package/.apm"
+          python - "$scratch_dir" <<'PY'
+          import os, pathlib, subprocess, sys
+          scratch = pathlib.Path(sys.argv[1])
+          env = dict(os.environ, HOME=str(scratch / "state"), APM_HOME=str(scratch / "state/.apm"))
+          for args in (("install", "--frozen"), ("compile", "--validate"),
+                       ("compile", "--single-agents"), ("audit", "--ci"),
+                       ("pack", "--archive", "-o", str(pathlib.Path.cwd() / "dist"))):
+              subprocess.run(["apm", *args], cwd=scratch / "package", env=env, check=True)
+          PY
+      - name: Canonical repository remains unchanged
+        run: git diff --exit-code
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: apm-package
+          path: dist/*.zip
+          if-no-files-found: error
+
+  grade-observations:
+    if: github.event_name == 'workflow_dispatch' && inputs.observations != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.11'
+      - name: Parse observation data without shell interpolation
+        env:
+          OBSERVATIONS_JSON: ${{ inputs.observations }}
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          observations = json.loads(os.environ["OBSERVATIONS_JSON"])
+          pathlib.Path("observations.json").write_text(json.dumps(observations))
+          PY
+      - name: Grade supplied live-agent observations (no model invocation)
+        run: python evals/grade.py --observations observations.json

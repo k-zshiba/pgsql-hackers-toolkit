@@ -1,0 +1,6 @@
+name: pg-multi-agent-workspace
+version: 0.1.0
+targets: [codex, claude]
+dependencies:
+  apm:
+    - k-zshiba/pgsql-hackers-toolkit#v0.1.0
