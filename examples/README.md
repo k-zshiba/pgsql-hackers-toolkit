@@ -10,7 +10,7 @@ Copy a manifest into your workspace:
 | Codex + Claude | [both/apm.yml](both/apm.yml) |
 | Portable Agent Skills | [agent-skills/apm.yml](agent-skills/apm.yml) |
 
-The examples require the unpublished `v0.1.0` tag. Until release, use a local path
+The examples use the `v0.1.0` release tag. For local development, use a local path
 as shown in the [README](../README.md#install). Run `apm install`; Codex also needs
 `apm compile --single-agents`. Set `PG_SOURCE` or give the checkout path in the
 task, then check your agent's Skills. Portable hosts must load linked instructions.
