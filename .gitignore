@@ -5,6 +5,8 @@
 /.agents/
 /.claude/
 /.codex/
+/.github/copilot-instructions.md
+/.github/instructions/
 /.claude-plugin/
 /.codex-plugin/
 /plugin.json

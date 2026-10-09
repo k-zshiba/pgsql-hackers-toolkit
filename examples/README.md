@@ -6,7 +6,8 @@ Copy a manifest into your workspace:
 | --- | --- |
 | Codex | [codex/apm.yml](codex/apm.yml) |
 | Claude Code | [claude/apm.yml](claude/apm.yml) |
-| Both | [both/apm.yml](both/apm.yml) |
+| GitHub Copilot | [copilot/apm.yml](copilot/apm.yml) |
+| Codex + Claude | [both/apm.yml](both/apm.yml) |
 | Portable Agent Skills | [agent-skills/apm.yml](agent-skills/apm.yml) |
 
 The examples require the unpublished `v0.1.0` tag. Until release, use a local path

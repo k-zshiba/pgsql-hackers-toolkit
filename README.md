@@ -3,7 +3,7 @@
 AI agent Skills for PostgreSQL core development: research, design, implement,
 test, review, revise patches and draft pgsql-hackers mail.
 
-Supports Codex, Claude Code and portable Agent Skills through
+Supports Codex, Claude Code, GitHub Copilot and portable Agent Skills through
 [Agent Package Manager (APM)](https://github.com/microsoft/apm).
 Application SQL, query tuning and database administration are outside its scope.
 
@@ -28,8 +28,8 @@ export PG_SOURCE=/absolute/path/to/postgresql
 ```
 
 APM creates `apm.yml` and `apm.lock.yaml`. Commit both to pin the resolved revision.
-Choose `--target claude`, `--target codex,claude` or `--target agent-skills` as needed;
-compilation is required only for Codex.
+Choose `--target claude`, `--target copilot`, `--target agent-skills` or a
+combination such as `--target codex,copilot`; compile only when Codex is selected.
 
 The `v0.1.0` release is unpublished, so the example uses the `dev` branch.
 After publication, replace `#dev` with `#v0.1.0` for a tagged release.
@@ -41,6 +41,17 @@ Use source packages; packed ZIP installation has
 For existing workspaces, inspect `apm compile --dry-run` and preserve handwritten
 agent instructions before compiling. Keep generated files out of PostgreSQL patches
 and keep `apm_modules/` available for linked instructions.
+
+## GitHub Copilot
+
+Install with `--target copilot` and omit compilation. Open the workspace in
+VS Code's Copilot agent mode or start Copilot CLI there. In VS Code, give the
+absolute checkout path if the agent does not inherit `PG_SOURCE`.
+
+In Copilot CLI, inspect `/skills list` and `/instructions`; use `/skills reload`
+after installation. In VS Code, use Chat: Open Customizations to inspect Skills
+and Instructions. Invoke `/research-postgresql` or describe a core-development task.
+GitHub-hosted cloud/review sessions need their own APM setup and source access.
 
 ## Use
 
@@ -66,8 +77,8 @@ pgsql-hackers history. Explain the evidence and unknowns before editing.
 | [revise-pg-patch](.apm/skills/revise-pg-patch/SKILL.md) | Address feedback and retest |
 | [prepare-pgsql-hackers-post](.apm/skills/prepare-pgsql-hackers-post/SKILL.md) | Draft proposals, submissions, reviews and replies |
 
-Use `$research-postgresql` in Codex or `/research-postgresql` in Claude to invoke
-research explicitly. See [task examples](examples/workflows.md).
+Use `$research-postgresql` in Codex or `/research-postgresql` in Claude/Copilot
+to invoke research explicitly. See [task examples](examples/workflows.md).
 
 The [shared instructions](.apm/instructions/postgresql-contributor.instructions.md)
 require current evidence, preservation of user changes and honest test results.

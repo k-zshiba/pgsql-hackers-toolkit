@@ -1,7 +1,7 @@
 # Validation
 
-Historical verification: 2026-10-06, unreleased v0.1.0, APM 0.33.0 and Python 3.11.
-Checks used temporary projects with isolated child-process homes.
+Package verification: 2026-10-09; runtime/URL evidence: 2026-10-06.
+Unreleased v0.1.0, APM 0.33.0 and Python 3.11; temporary projects with isolated homes.
 
 ## Recorded results
 
@@ -11,9 +11,9 @@ Checks used temporary projects with isolated child-process homes.
 | Eval fixtures | 19 valid: nine positive, six negative, four safety cases; all seven Skills covered |
 | Skill metadata | All seven frontmatters passed the Skill creation validator |
 | APM author loop | Frozen install, validation, dry-run/actual compilation, audit and ZIP packing passed |
-| Consumers | Codex, Claude, both and portable Agent Skills deployed with expected contents and working links |
+| Consumers | Eight scenarios: Codex, Claude, Copilot and portable Agent Skills individually, all provider pairs and the three-provider combination; contents and links checked |
 | Reproducibility | Repeat install/compile preserved bytes; tagged Git fixture replayed the locked commit after cache removal |
-| Drift/prune | Ref drift rejected, deployed changes detected, unrelated rules preserved; recompile cleared pruned Codex context |
+| Drift/prune | Ref drift rejected; Skill/Copilot rule changes detected; user Claude/Copilot rules and GitHub workflow preserved; recompile cleared pruned Codex context |
 | Archive | Skills, references, shared instruction, matching license and integrity hashes checked; tampering rejected |
 | Codex discovery | CLI 0.159.2 listed seven enabled Skills without errors or model turns |
 | Source links | 64 research/Skill URLs reachable at verification time |
@@ -31,6 +31,8 @@ or model request.
 ## APM 0.33.0 constraints
 
 - Full validation requires Python 3.11+: the audit scanner imports `tomllib`.
+- Copilot-only consumers omit compilation; `--single-agents` emits redundant Codex
+  context. Combined targets compile only when Codex is selected.
 - Use native Git/local-source packages for installation. Direct ZIP deployment
   breaks links to shared instructions; plugin-directory dependencies omit root
   instruction discovery. ZIP contents and integrity are tested separately.
@@ -48,5 +50,5 @@ or model request.
 Author self-review checked contributor scope, evidence, safety, packaging and eval
 claims. This was not independent review. Package checks and offline discovery
 do not prove loaded instruction behavior or live model routing. Authenticated
-Claude discovery, public-tag cold installation and live-agent evals remain open.
+Claude/Copilot discovery, public-tag cold installation and live-agent evals remain open.
 No PostgreSQL patch was built or tested. Recheck compatibility on APM upgrades.

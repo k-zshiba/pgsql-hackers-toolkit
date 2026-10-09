@@ -8,7 +8,9 @@ source and discussion. Repository documentation is in English.
 - Author agent files in `.apm/instructions/` and `.apm/skills/`. Put shared rules
   in the common instruction and task details in Skills or their references.
 - Let APM generate provider files and plugin metadata; do not commit generated
-  roots, provider trees, caches or bundles. See [architecture](docs/architecture.md).
+  roots, provider trees, caches or bundles. Copilot's `.github/instructions/` and
+  `.github/copilot-instructions.md` are generated too; `.github/workflows/` is CI
+  source. See [architecture](docs/architecture.md).
 - Keep `.apm/instructions/LICENSE` byte-identical to root `LICENSE` so packed
   files carry the legal notice.
 - Verify deployed links. Add positive and negative eval cases for behavior changes.

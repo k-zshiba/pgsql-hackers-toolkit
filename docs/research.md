@@ -13,7 +13,7 @@ Inspected source: `18c4c43c924ceae890fe0f2038806690e5b2d6c8`.
 | --- | --- |
 | Package | Git-installable `apm.yml` with canonical `.apm/` primitives. [Anatomy](https://microsoft.github.io/apm/concepts/package-anatomy/) |
 | Manifest/schema | Use `targets`, explicit packing `includes` and the supported OpenAPM 0.1.41 identity; validate through the CLI loader. [Manifest](https://microsoft.github.io/apm/reference/manifest-schema/), [draft specification](https://microsoft.github.io/apm/specs/openapm-v01/) |
-| Primitives | Skills use Agent Skills frontmatter; shared instructions compile for Codex and deploy as Claude rules. [Skills](https://microsoft.github.io/apm/producer/author-primitives/skills/), [instructions/agents](https://microsoft.github.io/apm/producer/author-primitives/instructions-and-agents/) |
+| Primitives | Skills use Agent Skills frontmatter; shared instructions compile for Codex and deploy as native Claude/Copilot rules. [Skills](https://microsoft.github.io/apm/producer/author-primitives/skills/), [instructions/agents](https://microsoft.github.io/apm/producer/author-primitives/instructions-and-agents/) |
 | Install/lock | Git refs and local paths are supported; frozen install checks lock agreement, audit checks deployed content. [Install](https://microsoft.github.io/apm/consumer/install-packages/), [lockfile](https://microsoft.github.io/apm/reference/lockfile-spec/) |
 | Targets/links | Consumer selection intersects package targets; deployed links can depend on `apm_modules/`. [Targets](https://microsoft.github.io/apm/reference/targets-matrix/), [relative links](https://microsoft.github.io/apm/producer/package-relative-links/) |
 | Verify/pack | Compile validates and generates context; default pack creates plugin artifacts. Installation constraints are in [validation](validation.md#apm-0330-constraints). [Verify loop](https://microsoft.github.io/apm/producer/preview-and-validate/), [pack](https://microsoft.github.io/apm/producer/pack-a-bundle/) |
@@ -50,6 +50,19 @@ Discussion examples informed the research/revision workflows:
 ([CF 6870](https://commitfest.postgresql.org/patch/6870/)) and
 [slotsync backpatch](https://www.postgresql.org/message-id/CAHGQGwH_AAbtsiYDJt65N7_4PJ0CgOJmBEaCq68e5_tcuG_vXw@mail.gmail.com).
 Read whole threads and verify versions, prerequisites and branch-specific risks.
+
+## GitHub Copilot follow-up — 2026-10-09
+
+Rechecked the official [latest APM release](https://github.com/microsoft/apm/releases/latest):
+0.33.0 remains the observed release. Its existing `copilot` target needs no
+toolchain upgrade. [GitHub Agent Skills](https://docs.github.com/en/copilot/concepts/agents/about-agent-skills)
+and [VS Code Skills](https://code.visualstudio.com/docs/agent-customization/agent-skills)
+confirm support for APM's shared `.agents/skills/` path.
+[Copilot CLI instructions](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions)
+support `.github/instructions/` with `applyTo`; the APM installation probe preserves
+our `"**"` rule. [Copilot CLI Skills](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-skills)
+documents discovery and reload commands. See [architecture](architecture.md) for
+the compile decision and [validation](validation.md) for tested scope and limits.
 
 ## Agent formats and reference projects
 

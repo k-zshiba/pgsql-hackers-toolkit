@@ -1,6 +1,6 @@
 # Architecture
 
-Accepted 2026-10-06; based on [research](research.md).
+Accepted 2026-10-06; Copilot added 2026-10-09. Based on [research](research.md).
 
 ## Package
 
@@ -24,9 +24,15 @@ The copied license must match root `LICENSE`; APM's pack allowlist excludes the 
 | --- | --- |
 | Codex | `.agents/skills/`; compile shared instructions into `AGENTS.md` |
 | Claude Code | `.claude/skills/` and native `.claude/rules/` |
+| GitHub Copilot | `.agents/skills/` and native `.github/instructions/`; no compile needed |
 | `agent-skills` | `.agents/skills/`; the host must load linked shared instructions |
 
 Consumers explicitly select targets from those supported by the package.
+Copilot uses the existing APM target without an adapter or dependency. Copilot-only
+consumers omit compilation: `--single-agents` would emit a redundant `AGENTS.md`.
+Combined Codex/Copilot consumers still compile Codex context, which Copilot may
+also read; separate workspaces avoid overlap. Ignore generated Copilot paths
+individually, preserving `.github/workflows/` as maintained source.
 Keep `apm_modules/` for deployed links. Native Git/local-source installation is
 supported; bundle installation has [constraints](validation.md#apm-0330-constraints).
 
