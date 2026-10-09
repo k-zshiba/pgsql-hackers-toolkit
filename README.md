@@ -17,28 +17,24 @@ python3.11 -m venv .venv
 python -m pip install apm-cli==0.33.0
 ```
 
-Clone this repository beside a separate workspace. In that workspace, create
-`apm.yml`:
-
-```yaml
-name: my-postgresql-workspace
-version: 0.1.0
-targets: [codex]  # or [claude], [codex, claude], [agent-skills]
-dependencies:
-  apm:
-    - ../pgsql-hackers-toolkit
-```
-
-Run in the workspace:
+Install directly from the remote repository in a separate workspace:
 
 ```bash
-apm install
-apm compile --single-agents  # Codex only
+mkdir my-postgresql-workspace
+cd my-postgresql-workspace
+apm install k-zshiba/pgsql-hackers-toolkit#dev --target codex
+apm compile --single-agents --target codex
 export PG_SOURCE=/absolute/path/to/postgresql
 ```
 
-The `v0.1.0` release is unpublished. After publication, replace the local path
-with `k-zshiba/pgsql-hackers-toolkit#v0.1.0` for a Git install.
+APM creates `apm.yml` and `apm.lock.yaml`. Commit both to pin the resolved revision.
+Choose `--target claude`, `--target codex,claude` or `--target agent-skills` as needed;
+compilation is required only for Codex.
+
+The `v0.1.0` release is unpublished, so the example uses the `dev` branch.
+After publication, replace `#dev` with `#v0.1.0` for a tagged release.
+For local development, clone this repository beside the workspace and replace
+`k-zshiba/pgsql-hackers-toolkit#dev` with `../pgsql-hackers-toolkit`.
 Use source packages; packed ZIP installation has
 [known limitations](docs/validation.md#apm-0330-constraints).
 
