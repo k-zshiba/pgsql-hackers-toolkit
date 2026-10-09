@@ -1,23 +1,21 @@
 # Contributing
 
-Contribute verifiable PostgreSQL **core contributor workflows**, not a static
-internals encyclopedia or database usage advice. Keep agent artifacts original,
-small and routed by task intent. [Architecture](docs/architecture.md) describes
-the authoring boundary; [research](docs/research.md) records official sources.
+Keep workflows focused on PostgreSQL core contribution and grounded in current
+source and discussion. Repository documentation is in English.
 
-## Changes and validation
+## Edit and test
 
-Author only in `.apm/instructions/` and `.apm/skills/` for agent artifacts.
-Do not edit/commit deployed AGENTS.md, CLAUDE.md, provider trees or plugin
-manifests. One common instruction owns shared rules. Keep intra-Skill references
-local; check package-relative links after installation. APM owns all transforms.
-No new adapter, subagent or executable helper without a concrete need.
-Keep `.apm/instructions/LICENSE` byte-identical to root `LICENSE`; this legal
-notice accompanies packed primitives because APM cannot pack a root license
-through its primitive allowlist. Tests enforce both the source match and ZIP notice.
+- Author agent files in `.apm/instructions/` and `.apm/skills/`. Put shared rules
+  in the common instruction and task details in Skills or their references.
+- Let APM generate provider files and plugin metadata; do not commit generated
+  roots, provider trees, caches or bundles. See [architecture](docs/architecture.md).
+- Keep `.apm/instructions/LICENSE` byte-identical to root `LICENSE` so packed
+  files carry the legal notice.
+- Verify deployed links. Add positive and negative eval cases for behavior changes.
+- Discover PostgreSQL revisions, commands, support status and process details
+  at task time instead of hard-coding them.
 
-Use Python **3.11+** for maintainer validation. APM 0.33.0 advertises Python 3.10
-support, but its audit file scanner imports `tomllib` on the tested release.
+Use Python 3.11+:
 
 ```bash
 python3.11 -m venv .venv
@@ -27,13 +25,11 @@ python -m unittest discover -s tests -v
 python evals/grade.py --validate
 ```
 
-The integration suite copies source to temporary author and consumer projects.
-It executes `apm compile --validate`, dry-run/actual compile, frozen install,
-audit, pack and install using the pinned released CLI. APM creates its own
-temporary global config/cache in isolated child-process homes. The real user's
-home and PostgreSQL checkout are not mutated.
+Tests use temporary projects and isolated child-process homes. See
+[validation](docs/validation.md) for coverage and constraints, and
+[evals](evals/README.md) for optional live-agent checks. Report checks not run.
 
-To explore the verify loop manually, **in an isolated source copy**:
+To inspect APM output manually, run in an isolated source copy:
 
 ```bash
 apm install --frozen
@@ -44,89 +40,44 @@ apm audit --ci
 apm pack --archive -o dist
 ```
 
-Root lock maintenance uses `apm lock` before deployment, so the committed lock
-records only the empty external dependency closure rather than generated local
-deployment metadata. If dependencies are introduced, review actual resolved
-commits, transitive dependencies, licenses and hashes; do not hand-edit the lock.
+Generate the root lock with `apm lock` before deployment; do not hand-edit it.
 
-Add routing fixtures for behavior changes, including likely false positives.
-Fixture/grade validation is not live routing evidence. For a substantial change,
-run the [optional real-agent eval procedure](evals/README.md) and retain model,
-client, package revision and transcript evidence. Report unperformed checks.
-Do not hard-code a live PostgreSQL source revision, test command, supported
-branch list or CommitFest manager into the workflows.
+## Version and release
 
-## Versioning and releases
+`apm.yml` owns the version. Use `vMAJOR.MINOR.PATCH` Git tags and keep
+`CHANGELOG.md` and example dependency refs in sync.
 
-Use Semantic Versioning with `apm.yml` as package version authority and Git
-tags named `vMAJOR.MINOR.PATCH`. Keep examples and CHANGELOG in agreement.
-
-| Change | v0.x policy |
+| Change | Version bump |
 | --- | --- |
-| Wording/source-link fix preserving behavior | Patch release |
-| Skill/instruction correction preserving public scope and safety contract | Patch release; describe changed behavior |
-| New Skill or changed routing/workflow contract | Minor release, eval coverage and compatibility notes |
-| Skill rename/removal, layout/install-path change, stronger/different invocation requirements | Minor release with migration instructions; never silently break in a patch release |
-| Post-1.0 incompatible public behavior | Major release |
+| Compatible wording, links or workflow fixes | Patch |
+| New Skill or changed routing contract | Minor, with evals and compatibility notes |
+| Breaking names, behavior or installation layout | Minor during v0.x; major after 1.0, with migration notes |
 
-After 1.0, additive compatible behavior is minor, compatible fixes are patch,
-and breaking names/behavior/layout are major. During v0.x compatibility is
-guaranteed within a minor line to the tested installation/workflow contract;
-minor upgrades can break and must be reviewed. Upgrading APM is not an automatic
-toolkit behavior change: repeat consumer/pack tests and record new compatibility.
+During v0.x, preserve compatibility within each minor line. After 1.0,
+compatible additions are minor releases.
 
-Release procedure:
+1. Recheck official docs when changing deployment or upgrading APM; update version,
+   changelog and examples.
+2. Run tests and eval validation; review the final diff, archive contents and links.
+3. Prepare the immutable tag and release description. Obtain explicit authorization
+   before pushing tags, uploading assets or publishing to a marketplace.
+4. Test the published tag from a fresh consumer and replay its committed lock with
+   a cold `apm install --frozen`. Local fixtures cannot prove public availability.
 
-1. Recheck APM and agent official docs if changing package/deployment behavior.
-   Set the package version; update CHANGELOG and example dependency refs.
-2. Run all tests/eval validation and critical self-review. Inspect the packed ZIP,
-   canonical/deployed links and final Git diff. The tag must include `.apm/`,
-   manifest, lock, docs and license. No generated deployment files.
-3. Prepare a concrete release/tag and description for maintainer approval. Local
-   preparation does not authorize pushing tags, uploading assets or marketplace
-   publication. Once explicitly authorized, publish an immutable SemVer tag on
-   the Git repository; no independent registry is needed.
-4. Smoke-test the **published** `k-zshiba/pgsql-hackers-toolkit#vX.Y.Z` from a
-   fresh consumer, commit its lock in that consumer and replay a cold frozen
-   install. Local Git fixtures test mechanics but cannot prove public availability.
+## Dependencies and review
 
-Marketplace registration is optional discovery. APM can synthesize plugin
-metadata from the manifest; don't create a parallel handwritten plugin source.
+v0.1 has no external agent dependencies. Add an adapter, agent or helper only
+for a concrete need. Before adding a dependency, record its source/ref, resolved
+commit/hash, license obligations, maintenance plan, transitive dependencies,
+permissions and network/credential requirements. Keep optional dependencies
+from becoming essential to core workflows.
 
-## Dependency policy
+Declare dependencies in `apm.yml`, generate the lock through APM and verify frozen
+install plus audit. Keep dev-only artifacts out of shipped files. Review upstream
+licenses, advisories and dependency changes on upgrades; `requirements-dev.txt`
+pins APM, while its Python dependencies are not locked by `apm.lock.yaml`.
 
-v0.1 has zero external agent-artifact dependencies, including devDependencies,
-MCP and LSP. Before adding one, explain why its value cannot be provided by a
-small original local workflow. Core contribution must still work if a nonessential
-external Skill disappears. Record:
-
-- Source, exact version/ref and resolved commit/hash.
-- Declared license and actual licensing/notice obligations.
-- Maintenance/release status, owner and update plan.
-- Full transitive closure and necessity of every executable/MCP/hook surface.
-- Permissions, network/credential behavior, supply-chain and disappearance risk.
-
-Declare accepted dependencies in `apm.yml`, generate `apm.lock.yaml` through APM,
-and verify fresh frozen install plus audit in CI. Do not implement another
-resolver or hide downloads in scripts. Dev-only artifacts belong outside shipped
-source and in explicit devDependencies if genuinely needed.
-
-APM CLI is the one directly pinned development tool in `requirements-dev.txt`.
-Its Python dependencies are owned by upstream and are not locked by apm.lock;
-this repository does not claim full Python-toolchain byte reproducibility. CI
-uses Python 3.11 and pinned official checkout/setup-python/upload-artifact v7
-action revisions (MIT, Node 24, GitHub-hosted Ubuntu runner). Review upstream license (MIT),
-security advisories and dependency changes before upgrading. No third-party
-reference-project prose/code is copied into our package.
-
-## Review criteria
-
-Check core/application separation, current-source evidence, inference handling,
-prior discussion, dirty-tree preservation and external-write authorization.
-Challenge reviewer reassurance and unverified test/readiness claims. Check Skill
-boundaries, negative evals, source/deployment duplication, pack contents and
-README accuracy. Do not approve a workflow based only on Markdown lint.
-
-Toolkit contributions use this repository's normal review mechanism. PostgreSQL
-patches produced with it follow PostgreSQL's own current pgsql-hackers/CommitFest
-process. They are separate projects and separate submission decisions.
+Review scope, evidence, open questions, preservation of user work, external-write
+authorization, test claims, Skill boundaries, evals and packaging. Toolkit changes
+use this repository's review process; PostgreSQL patches follow pgsql-hackers
+and CommitFest.

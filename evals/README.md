@@ -1,30 +1,24 @@
 # Behavioral evaluation
 
-`scenarios.json` covers all seven workflows, Japanese and English prompts,
-application/operations negatives, dirty-tree safety, untrusted mail/patch
-instructions and missing evidence. Fixtures are expectations, not a live result.
+[scenarios.json](scenarios.json) covers seven workflows, English/Japanese prompts,
+application/operations negatives and safety cases. Default CI validates fixtures
+and the grader; live routing requires agent observations.
 
-Default CI validates scenario shape, Skill references, category coverage and
-the grader's failure behavior. It does **not** simulate a routing model with
-keyword matching or count successful fixture parsing as correct routing.
+## Collect observations
 
-To evaluate a real agent, install the package in an isolated consumer as in the
-README. Give a fresh session only each scenario's `prompt`, discovered Skill
-metadata and common instructions. Ask for the initial routing/plan; do not show
-expected Skills or the grading rubric. Use no live database or external writes.
-The fixtures deliberately omit full patches/checkouts: they test routing and
-first-step planning, not PostgreSQL semantic correctness or executing a patch.
-For execution evals, provide independently maintained raw source/patch/test
-artifacts and review outcomes separately.
+1. Install the package in an isolated workspace using the [README](../README.md#install).
+2. Start a fresh agent session per scenario with its prompt, discovered Skill
+   metadata and common instructions. Request an initial plan; hide expected
+   Skills and the rubric. Use no live database or external writes.
+3. Record client version, package commit, model, settings and transcript.
+4. Have a human reviewer map the trace to criteria in [grade.py](grade.py).
+   Record successful and forbidden behavior in `observed`.
 
-Record agent/client version, package commit, model, session settings and actual
-transcript in your evaluation notes. A human reviewer maps the trace to criterion
-names in `grade.py`; do not simply ask the model whether it passed. `observed`
-records both successful actions and any forbidden behavior. For a planning-only
-case, a stated safe plan satisfies a planning criterion; a missing-evidence case
-must not fabricate source locations or test results.
+These scenarios test routing and initial planning. Testing patch execution
+requires separate source, patches, tests and review of outcomes. A safe plan can
+satisfy planning criteria; missing evidence must not be fabricated.
 
-Store a complete JSON observation list (one record per scenario):
+Save a JSON list with one record per scenario:
 
 ```json
 [
@@ -32,24 +26,23 @@ Store a complete JSON observation list (one record per scenario):
     "id": "planner-location-ja",
     "skills": ["research-postgresql"],
     "observed": ["source_evidence", "no_source_edits"],
-    "notes": "Trace run-01: asks for checkout and reproducer, plans source/history checks, no edits."
+    "notes": "Trace run-01: requests checkout and reproducer; no edits."
   }
 ]
 ```
 
-This abbreviated example shows the shape only; grading requires every scenario.
-The `skills` list contains the selected workflow order in the initial plan,
-including an intended later implementation Skill where the task requests it.
-Minor test substeps are not additional top-level routing selections.
+This shows one record; grading requires all scenarios. List Skills in planned
+workflow order, including later implementation when requested. Minor test substeps
+are not separate routing selections. Negative cases require an empty Skill list.
+
+## Grade
 
 ```bash
 python evals/grade.py --validate
 python evals/grade.py --observations evals/observations-local.json
 ```
 
-Exit codes: 0 valid fixtures/all observations pass; 1 behavioral failure;
-2 invalid/missing observations. Negative cases require an empty Skill list.
-Results only certify the supplied observations; inspect the transcripts to assess
-their fidelity. Repeat with different languages/models and other installed Skills
-to assess routing robustness. An optional CI dispatch grades supplied observations;
-it does not call a provider or consume API keys.
+Exit codes: `0` valid/pass, `1` behavior failure, `2` invalid or missing input.
+Review transcripts to check observation accuracy. Optional CI dispatch grades
+supplied observations without calling a model. Repeat across models, languages
+and other installed Skills to assess routing robustness.
