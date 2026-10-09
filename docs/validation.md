@@ -1,112 +1,54 @@
-# Validation and self-review
+# Validation
 
-Package verification date: 2026-10-09; initial runtime/URL evidence: 2026-10-06.
-This file records the tested unreleased v0.1.0,
-scope and material limitations. Do not replace missing evidence with claims.
+Package verification: 2026-10-09; runtime/URL evidence: 2026-10-06.
+Unreleased v0.1.0, APM 0.33.0 and Python 3.11; temporary projects with isolated homes.
 
-## Toolchain and scope
+## Recorded results
 
-APM CLI 0.33.0; maintainer tests use Python 3.11. All APM work happens in
-temporary author/consumer projects with isolated child-process homes. No global
-agent environment, live database or user PostgreSQL checkout is modified.
-The implementation does not publish a tag or send contributor mail.
-
-## Verification record
-
-| Check | Observed result |
+| Check | Result |
 | --- | --- |
-| `python -m unittest discover -s tests -v` | 12 tests passed: five structural, four real APM integration and three eval-contract tests |
-| `python evals/grade.py --validate` | 19 scenarios valid: nine positive, six negative and four safety cases; all seven Skills covered |
-| Official Skill creation validator | All seven Skill frontmatters passed |
-| APM author loop | Frozen install, manifest/instruction validation, dry-run and actual compilation, CI audit and plugin ZIP pack succeeded in isolated source copies |
-| Consumers | Eight scenarios: Codex, Claude, Copilot and portable Agent Skills individually, all three provider pairs and the three-provider combination; source content/metadata and relative references verified |
-| Idempotency and reproducibility | Second frozen install/compile retained byte snapshots; tagged Git fixture locked exact commit and replayed after its package cache was removed |
-| Drift and ownership | Changed manifest ref rejected without deployment mutation; changed deployed Skill and Copilot instruction detected by audit; prune preserved user Claude/Copilot rules and a GitHub workflow; recompilation removed obsolete Codex context |
-| Packed artifact | Seven Skills, their references, shared instruction, byte-matched PostgreSQL License notice, SPDX metadata and integrity hashes checked; tampered bundle refused installation |
-| Offline Codex runtime | Codex CLI 0.159.2 `skills/list` recognized all seven enabled Skills with no errors; zero model turns |
-| Source URL checks | 64 research and Skill-source URLs reachable; corrected a stale OpenAPM URL during review |
+| Unit/integration suite | 12 passed: five structure, four APM integration, three eval-contract tests |
+| Eval fixtures | 19 valid: nine positive, six negative, four safety cases; all seven Skills covered |
+| Skill metadata | All seven frontmatters passed the Skill creation validator |
+| APM author loop | Frozen install, validation, dry-run/actual compilation, audit and ZIP packing passed |
+| Consumers | Eight scenarios: Codex, Claude, Copilot and portable Agent Skills individually, all provider pairs and the three-provider combination; contents and links checked |
+| Reproducibility | Repeat install/compile preserved bytes; tagged Git fixture replayed the locked commit after cache removal |
+| Drift/prune | Ref drift rejected; Skill/Copilot rule changes detected; user Claude/Copilot rules and GitHub workflow preserved; recompile cleared pruned Codex context |
+| Archive | Skills, references, shared instruction, matching license and integrity hashes checked; tampering rejected |
+| Codex discovery | CLI 0.159.2 listed seven enabled Skills without errors or model turns |
+| Source links | 64 research/Skill URLs reachable at verification time |
 
-The optional runtime check is reproducible with:
+Run the current suite using [CONTRIBUTING](../CONTRIBUTING.md#edit-and-test).
+Optional read-only Codex discovery, using an installed CLI:
 
 ```bash
 python tests/check_codex_runtime.py --codex /path/to/installed/codex
 ```
 
-It uses the official [app-server handshake and skills/list API](https://learn.chatgpt.com/docs/app-server),
-only initialization and read requests, a fresh consumer and disposable
-`HOME`/`CODEX_HOME`. No authentication, conversation or model request is made.
-Claude CLI 2.1.133 was available, but authenticated runtime Skill discovery was
-not exercised; the Claude integration evidence is deployment inspection.
-Copilot deployment was rechecked on 2026-10-09 using APM 0.33.0. Copilot CLI
-was not installed, so no Copilot runtime discovery or live model run is claimed.
+This check creates a disposable consumer and agent home and makes no authentication
+or model request.
 
-## Critical self-review
+## APM 0.33.0 constraints
 
-Reviewed from both a PostgreSQL contributor's and a package maintainer's
-perspective. This is author self-review, not an independent human review.
+- Full validation requires Python 3.11+: the audit scanner imports `tomllib`.
+- Copilot-only consumers omit compilation; `--single-agents` emits redundant Codex
+  context. Combined targets compile only when Codex is selected.
+- Use native Git/local-source packages for installation. Direct ZIP deployment
+  breaks links to shared instructions; plugin-directory dependencies omit root
+  instruction discovery. ZIP contents and integrity are tested separately.
+- Use default plugin packing. Legacy `apm pack --format apm` emits an empty bundle
+  for this dependency-free package; portable `agent-plugin` cannot carry instructions.
+- Install and compile in an isolated copy before packing to avoid an unsupported
+  `pack.target: minimal` lock. Direct bundle deployment also needs explicit targets.
+- Frozen install checks manifest/lock agreement; audit checks deployed content.
+  Local-path dependencies are not pinned to Git commits.
+- After pruning, recompile to remove stale Codex root context. The packed license
+  must live inside the primitive directories.
 
-- **Contributor scope:** excluded SQL/operations intents in all relevant routing
-  descriptions and in six negative fixtures. No static subsystem facts, frozen
-  branch-support lists, fabricated commands or ready-for-submission guarantees.
-  Current source, whole discussion, relevant tests and unresolved evidence guide
-  each workflow. Backpatch assessment is branch-specific.
-- **Community and safety:** large undiscussed features route to research/design;
-  mirror PRs are not the contribution route. Dirty/untracked work, separate
-  applicability experiments, actual test evidence and explicit external-write
-  authorization are required. These instructions cannot enforce agent permissions.
-- **Packaging:** kept one package, no external agent dependencies, unnecessary
-  agents or handwritten provider adapters. Found producer-target restrictions
-  blocking portable consumers and added `agent-skills`. Distinguished validation,
-  compilation, packing and supported native Git installation.
-- **Upstream defects:** discovered direct-bundle link relocation and instruction
-  discovery problems, the dependency-free legacy pack defect and Python 3.10
-  audit failure. Documented the supported path instead of implementing another
-  installer or duplicating contributor rules. Added a tested legal notice inside
-  packed primitives because root license files are not packable includes.
-- **Ownership and documentation:** verified native relative links and generated
-  content against canonical source, without committed deployed copies. Added
-  recompilation after prune to remove stale root context. Removed leftover
-  scaffold prose; synchronized README, examples and release policies.
-  Copilot-only consumers contain no Claude artifacts, Codex root or duplicate
-  Skill tree; combined consumers share `.agents/skills/`.
-- **Eval honesty:** scenario and grader tests validate the evaluation mechanism;
-  they do not establish model routing performance. Offline Skill listing proves
-  discovery only. Kept live observations opt-in and separated these claims.
+## Coverage limits
 
-## Known upstream constraints
-
-- APM 0.33.0's audit scanner imports `tomllib`, failing under Python 3.10 in the
-  tested environment. Use Python 3.11+ for full validation.
-- Legacy `apm pack --format apm` emits an empty bundle for this dependency-free
-  package. Default plugin format includes the canonical Skills/instructions and
-  is our tested packed path.
-- Direct bundle deployment needs an explicit `--target` in the tested CLI.
-  Git package installation uses the consumer's manifest targets normally.
-- Even with explicit targets, direct plugin-bundle deployment does not relocate
-  cross-Skill links to shared instructions. Plugin-directory dependencies resolve
-  these links but omit root instruction discovery. Neither is a supported full
-  consumer install path for this release; native `.apm/` packages work correctly.
-  Packed contents and integrity are tested separately from native installation.
-- Run install/compile before pack in an isolated source copy. Packing an
-  uninstalled copy can emit `pack.target: minimal`, which 0.33.0 then fails
-  to normalize during bundle install. The tested producer loop avoids this
-  upstream path without patching APM or editing packed locks.
-- Frozen install checks manifest/lock agreement; content drift requires audit.
-  Local path dependencies are not commit-pinned; Git fixtures exercise replay.
-- Prune removes owned Skills/rules, but compiled Codex context remains until
-  recompilation. Root license text is rejected as an explicit primitive include;
-  the package therefore carries a tested matching notice inside instructions.
-
-## Limits
-
-Artifact paths, metadata and contents are validated; offline Codex discovery is
-verified separately. Authenticated Claude/Copilot discovery, loaded instruction behavior
-and live LLM routing are not implied by these tests. The published repository/tag
-install smoke test remains
-a release-time check. No PostgreSQL patch was built by this toolkit task, so no
-PostgreSQL build/test result is claimed.
-
-Next validation priorities: reviewed live-agent routing traces, an immutable
-public-tag cold install after an authorized release, and rechecking upstream
-bundle/agent compatibility when upgrading APM. No marketplace infrastructure or
-additional dependency is needed for these steps.
+Author self-review checked contributor scope, evidence, safety, packaging and eval
+claims. This was not independent review. Package checks and offline discovery
+do not prove loaded instruction behavior or live model routing. Authenticated
+Claude/Copilot discovery, public-tag cold installation and live-agent evals remain open.
+No PostgreSQL patch was built or tested. Recheck compatibility on APM upgrades.
