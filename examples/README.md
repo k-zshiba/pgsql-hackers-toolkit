@@ -1,16 +1,34 @@
 # Consumer examples
 
-Choose a manifest directory for [Codex](codex/apm.yml),
-[Claude Code](claude/apm.yml), [both](both/apm.yml), or
-[portable Agent Skills](agent-skills/apm.yml). These examples refer to the planned
-v0.1.0 Git tag; publish it before using the remote dependency. Before release,
-replace the dependency with a local APM path as described in the root README.
+Copy a manifest into your workspace:
 
-Run `apm install` in your consumer workspace; Codex also needs
-`apm compile --single-agents`. Set `PG_SOURCE` or provide the checkout path in
-the task. Keep PostgreSQL source outside the consumer if you want deployment
-artifacts outside patch diffs. Restart/inspect the agent's available Skills.
+| Agent | Manifest |
+| --- | --- |
+| Codex | [codex/apm.yml](codex/apm.yml) |
+| Claude Code | [claude/apm.yml](claude/apm.yml) |
+| Both | [both/apm.yml](both/apm.yml) |
+| Portable Agent Skills | [agent-skills/apm.yml](agent-skills/apm.yml) |
 
-Portable hosts get Skills without a root context transform: each Skill must
-load its linked common contributor contract. A host that cannot follow linked
-files is not validated by this example. See [tasks](workflows.md).
+The examples require the unpublished `v0.1.0` tag. Until release, use a local path
+as shown in the [README](../README.md#install). Run `apm install`; Codex also needs
+`apm compile --single-agents`. Set `PG_SOURCE` or give the checkout path in the
+task, then check your agent's Skills. Portable hosts must load linked instructions.
+
+## Update or remove
+
+Commit the consumer's `apm.yml` and `apm.lock.yaml` for Git dependencies.
+Replay and check an install with:
+
+```bash
+apm install --frozen
+apm compile --single-agents  # Codex only
+apm audit --ci
+```
+
+To update, change the dependency ref, run `apm install --update`, review the
+lock/output diff and recompile for Codex. Local paths are not commit-pinned.
+
+To remove, delete the dependency, run `apm prune` and recompile Codex context.
+Preserve handwritten root instructions before compiling.
+
+See [task examples](workflows.md).
