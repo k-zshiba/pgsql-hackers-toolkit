@@ -3,6 +3,17 @@
 Keep workflows focused on PostgreSQL core contribution and grounded in current
 source and discussion. Repository documentation is in English.
 
+## Branches
+
+`main` is the development branch for the next release. Create short-lived topic
+branches from `main` and merge changes through pull requests with passing CI.
+The existing `dev` branch is retired from the development and release workflow;
+ongoing work starts from `main`.
+
+Published versions are immutable `vMAJOR.MINOR.PATCH` tags. Consumers use a release
+tag and lockfile to pin a published version while development continues on `main`.
+Prepare releases through a pull request to `main` and tag the merged commit.
+
 ## Edit and test
 
 - Author agent files in `.apm/instructions/` and `.apm/skills/`. Put shared rules
@@ -61,9 +72,12 @@ compatible additions are minor releases.
 1. Recheck official docs when changing deployment or upgrading APM; update version,
    changelog and examples.
 2. Run tests and eval validation; review the final diff, archive contents and links.
-3. Prepare the immutable tag and release description. Obtain explicit authorization
-   before pushing tags, uploading assets or publishing to a marketplace.
-4. Test the published tag from a fresh consumer and replay its committed lock with
+3. Merge the release preparation into `main` through a pull request and verify CI
+   passes for the merged commit.
+4. Prepare the immutable tag on that commit and the release description. Obtain
+   explicit authorization before pushing tags, uploading assets or publishing
+   to a marketplace.
+5. Test the published tag from a fresh consumer and replay its committed lock with
    a cold `apm install --frozen`. Local fixtures cannot prove public availability.
 
 ## Dependencies and review
