@@ -1,6 +1,7 @@
 # Validation and self-review
 
-Verification date: 2026-10-06. This file records the tested unreleased v0.1.0,
+Package verification date: 2026-10-09; initial runtime/URL evidence: 2026-10-06.
+This file records the tested unreleased v0.1.0,
 scope and material limitations. Do not replace missing evidence with claims.
 
 ## Toolchain and scope
@@ -18,9 +19,9 @@ The implementation does not publish a tag or send contributor mail.
 | `python evals/grade.py --validate` | 19 scenarios valid: nine positive, six negative and four safety cases; all seven Skills covered |
 | Official Skill creation validator | All seven Skill frontmatters passed |
 | APM author loop | Frozen install, manifest/instruction validation, dry-run and actual compilation, CI audit and plugin ZIP pack succeeded in isolated source copies |
-| Consumers | Codex, Claude, both together and portable Agent Skills deployed from the same native source; expected metadata/content and relative references verified |
+| Consumers | Eight scenarios: Codex, Claude, Copilot and portable Agent Skills individually, all three provider pairs and the three-provider combination; source content/metadata and relative references verified |
 | Idempotency and reproducibility | Second frozen install/compile retained byte snapshots; tagged Git fixture locked exact commit and replayed after its package cache was removed |
-| Drift and ownership | Changed manifest ref rejected without deployment mutation; changed deployed Skill detected by audit; prune preserved an unrelated user rule and recompilation removed obsolete Codex context |
+| Drift and ownership | Changed manifest ref rejected without deployment mutation; changed deployed Skill and Copilot instruction detected by audit; prune preserved user Claude/Copilot rules and a GitHub workflow; recompilation removed obsolete Codex context |
 | Packed artifact | Seven Skills, their references, shared instruction, byte-matched PostgreSQL License notice, SPDX metadata and integrity hashes checked; tampered bundle refused installation |
 | Offline Codex runtime | Codex CLI 0.159.2 `skills/list` recognized all seven enabled Skills with no errors; zero model turns |
 | Source URL checks | 64 research and Skill-source URLs reachable; corrected a stale OpenAPM URL during review |
@@ -36,6 +37,8 @@ only initialization and read requests, a fresh consumer and disposable
 `HOME`/`CODEX_HOME`. No authentication, conversation or model request is made.
 Claude CLI 2.1.133 was available, but authenticated runtime Skill discovery was
 not exercised; the Claude integration evidence is deployment inspection.
+Copilot deployment was rechecked on 2026-10-09 using APM 0.33.0. Copilot CLI
+was not installed, so no Copilot runtime discovery or live model run is claimed.
 
 ## Critical self-review
 
@@ -64,6 +67,8 @@ perspective. This is author self-review, not an independent human review.
   content against canonical source, without committed deployed copies. Added
   recompilation after prune to remove stale root context. Removed leftover
   scaffold prose; synchronized README, examples and release policies.
+  Copilot-only consumers contain no Claude artifacts, Codex root or duplicate
+  Skill tree; combined consumers share `.agents/skills/`.
 - **Eval honesty:** scenario and grader tests validate the evaluation mechanism;
   they do not establish model routing performance. Offline Skill listing proves
   discovery only. Kept live observations opt-in and separated these claims.
@@ -95,7 +100,7 @@ perspective. This is author self-review, not an independent human review.
 ## Limits
 
 Artifact paths, metadata and contents are validated; offline Codex discovery is
-verified separately. Authenticated Claude discovery, loaded instruction behavior
+verified separately. Authenticated Claude/Copilot discovery, loaded instruction behavior
 and live LLM routing are not implied by these tests. The published repository/tag
 install smoke test remains
 a release-time check. No PostgreSQL patch was built by this toolkit task, so no

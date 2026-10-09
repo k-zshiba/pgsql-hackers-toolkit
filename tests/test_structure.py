@@ -21,7 +21,7 @@ class StructureTests(unittest.TestCase):
         self.assertEqual(package.name, "pgsql-hackers-toolkit")
         manifest = load_yaml(ROOT / "apm.yml")
         self.assertRegex(manifest["version"], r"^0\.\d+\.\d+$")
-        self.assertEqual(manifest["targets"], ["codex", "claude", "agent-skills"])
+        self.assertEqual(manifest["targets"], ["codex", "claude", "copilot", "agent-skills"])
         self.assertEqual(manifest["license"], "PostgreSQL")
         self.assertEqual((ROOT / "LICENSE").read_bytes(),
                          (ROOT / ".apm/instructions/LICENSE").read_bytes())
@@ -79,6 +79,7 @@ class StructureTests(unittest.TestCase):
                                  capture_output=True, check=True).stdout.decode().split("\0")
         for path in tracked:
             self.assertFalse(re.match(r"^(AGENTS.md|CLAUDE.md|plugin.json|apm_modules/|build/|dist/|\.agents/|\.claude/|\.codex/|\.claude-plugin/|\.codex-plugin/)", path), path)
+            self.assertFalse(re.match(r"^\.github/(copilot-instructions\.md|instructions/|skills/|agents/|prompts/|hooks/)", path), path)
         for path in (ROOT / ".apm").rglob("*"):
             self.assertFalse(path.is_symlink(), path)
 
@@ -88,7 +89,9 @@ class StructureTests(unittest.TestCase):
             APMPackage.from_apm_yml(path, create_config=False)
             self.assertEqual(manifest["dependencies"]["apm"],
                              ["k-zshiba/pgsql-hackers-toolkit#v0.1.0"])
-            self.assertTrue(set(manifest["targets"]) <= {"codex", "claude", "agent-skills"})
+            self.assertTrue(set(manifest["targets"]) <= {"codex", "claude", "copilot", "agent-skills"})
+        copilot = load_yaml(ROOT / "examples/copilot/apm.yml")
+        self.assertEqual(copilot["targets"], ["copilot"])
 
 
 if __name__ == "__main__":

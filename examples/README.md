@@ -1,7 +1,8 @@
 # Consumer examples
 
 Choose a manifest directory for [Codex](codex/apm.yml),
-[Claude Code](claude/apm.yml), [both](both/apm.yml), or
+[Claude Code](claude/apm.yml), [GitHub Copilot](copilot/apm.yml),
+[Codex + Claude](both/apm.yml), or
 [portable Agent Skills](agent-skills/apm.yml). These examples refer to the planned
 v0.1.0 Git tag; publish it before using the remote dependency. Before release,
 replace the dependency with a local APM path as described in the root README.

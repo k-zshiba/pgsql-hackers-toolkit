@@ -11,6 +11,8 @@ Author only in `.apm/instructions/` and `.apm/skills/` for agent artifacts.
 Do not edit/commit deployed AGENTS.md, CLAUDE.md, provider trees or plugin
 manifests. One common instruction owns shared rules. Keep intra-Skill references
 local; check package-relative links after installation. APM owns all transforms.
+Copilot's `.github/instructions/` and `.github/copilot-instructions.md` are
+generated artifacts too; `.github/workflows/` remains maintained CI source.
 No new adapter, subagent or executable helper without a concrete need.
 Keep `.apm/instructions/LICENSE` byte-identical to root `LICENSE`; this legal
 notice accompanies packed primitives because APM cannot pack a root license

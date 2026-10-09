@@ -11,5 +11,6 @@ includes:
 targets:
   - codex
   - claude
+  - copilot
   - agent-skills
 dependencies: {}

@@ -18,14 +18,14 @@ validation uses the released `apm-cli==0.33.0`, rather than executing main.
 | Manifest | `name` and `version` are required. `targets` is preferred to legacy `target`. `includes` grants publication consent; an explicit list is exhaustive for plugin packing but does not filter install discovery. [Manifest](https://microsoft.github.io/apm/reference/manifest-schema/) |
 | Schema | OpenAPM v0.1 is an editor's draft; amendment 0.1.41 has a recognized `$schema` identity. It is not a stable 1.0 standard. We select this supported identity and also validate through the actual CLI loader. [OpenAPM](https://microsoft.github.io/apm/specs/openapm-v01/) |
 | Skills | `.apm/skills/<name>/SKILL.md`, Agent Skills frontmatter, optional bundled references/scripts/assets. [Author a skill](https://microsoft.github.io/apm/producer/author-primitives/skills/) |
-| Instructions | `.apm/instructions/*.instructions.md`, description and `applyTo`. Codex needs compilation into `AGENTS.md`; Claude gets native `.claude/rules/`. [Instructions and agents](https://microsoft.github.io/apm/producer/author-primitives/instructions-and-agents/) |
+| Instructions | `.apm/instructions/*.instructions.md`, description and `applyTo`. Codex needs compilation into `AGENTS.md`; Claude gets native `.claude/rules/`, Copilot native `.github/instructions/`. [Instructions and agents](https://microsoft.github.io/apm/producer/author-primitives/instructions-and-agents/) |
 | Agents | `.apm/agents/*.agent.md`; APM translates to Claude Markdown and Codex TOML. Codex translation does not preserve the full model/tool permission contract. No agents are needed in this release. [Same reference](https://microsoft.github.io/apm/producer/author-primitives/instructions-and-agents/) |
 | Prompts/hooks | `.apm/prompts/*.prompt.md` deploy as commands; hooks are target-sensitive executable surfaces. Neither adds value to our v0.1 workflow, so neither ships. [Prompts](https://microsoft.github.io/apm/producer/author-primitives/prompts/), [hooks](https://microsoft.github.io/apm/producer/author-primitives/hooks-and-commands/) |
 | Dependencies | `dependencies.apm` and `devDependencies.apm` accept Git refs and local paths. Dev dependencies are excluded from packed distributions. No external agent artifacts are necessary. [Install](https://microsoft.github.io/apm/consumer/install-packages/) |
 | Lock | `apm.lock.yaml` records resolved commits and deployment hashes. Commit it in consumers. `apm install --frozen` checks manifest/lock agreement; content integrity needs audit too. [Lockfile](https://microsoft.github.io/apm/reference/lockfile-spec/) |
 | Validation/build | `apm compile --validate`, `apm compile --dry-run`, then actual `apm compile`; there is no separate generic `apm build` command to invent. [Verify loop](https://microsoft.github.io/apm/producer/preview-and-validate/) |
 | Pack | `dependencies: {}` enables packing even with zero dependencies. `apm pack` defaults to Claude plugin format. Portable `agent-plugin` format cannot represent instructions. Actual testing found legacy `--format apm` emits an empty bundle. Default bundle contents are complete, but direct install breaks cross-Skill links; use native Git packages for installation. [Pack](https://microsoft.github.io/apm/producer/pack-a-bundle/), [CLI](https://microsoft.github.io/apm/reference/cli/pack/) |
-| Targets | Codex deploys skills under `.agents/skills/`; Claude receives `.claude/skills/` and rules. `agent-skills` supplies portable skills only. Package restrictions intersect consumer selections, so our manifest includes all three supported targets. Explicit consumer selection prevents unwanted deployment. [Target matrix](https://microsoft.github.io/apm/reference/targets-matrix/) |
+| Targets | Codex and Copilot deploy skills under `.agents/skills/`; Claude receives `.claude/skills/` and rules. `agent-skills` supplies portable skills only. Package restrictions intersect consumer selections, so our manifest includes all four supported targets after the Copilot follow-up below. Explicit consumer selection prevents unwanted deployment. [Target matrix](https://microsoft.github.io/apm/reference/targets-matrix/) |
 | Relative links | APM preserves intra-skill links and rewrites links to other package files into the consumer cache. Keep `apm_modules/` available; verify links after deployment and packing. [Link contract](https://microsoft.github.io/apm/producer/package-relative-links/) |
 | Marketplace | Optional discovery/output, separate from Git dependency distribution. Registry functionality is also unnecessary here. [Marketplace](https://microsoft.github.io/apm/producer/publish-to-a-marketplace/) |
 | Security | Install scans hidden Unicode; audit checks deployment hashes; policies can restrict sources and primitives. These are supply-chain controls, not a sandbox or a proof that prose is safe. Avoid `--force`, hooks, MCP and lifecycle scripts. [Security](https://microsoft.github.io/apm/enterprise/security/), [policy](https://microsoft.github.io/apm/enterprise/policy-reference/) |
@@ -81,6 +81,19 @@ Current Claude documentation also describes direct AGENTS.md loading on newer
 versions. Native APM Claude rules avoid relying on that version-dependent
 fallback. Installation tests check discovery paths and content, not actual
 model invocation. Runtime behavior requires optional live evaluation.
+
+## GitHub Copilot follow-up — 2026-10-09
+
+Rechecked the official [latest APM release](https://github.com/microsoft/apm/releases/latest):
+0.33.0 remains the observed release. Its existing `copilot` target needs no
+toolchain upgrade. [GitHub Agent Skills](https://docs.github.com/en/copilot/concepts/agents/about-agent-skills)
+and [VS Code Skills](https://code.visualstudio.com/docs/agent-customization/agent-skills)
+confirm support for APM's shared `.agents/skills/` path.
+[Copilot CLI instructions](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions)
+support `.github/instructions/` with `applyTo`; the APM installation probe preserves
+our `"**"` rule. [Copilot CLI Skills](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-skills)
+documents discovery and reload commands. See [architecture](architecture.md) for
+the compile decision and [validation](validation.md) for tested scope and limits.
 
 ## Existing projects
 

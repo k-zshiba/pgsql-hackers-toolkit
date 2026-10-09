@@ -1,6 +1,7 @@
 # Architecture decisions for v0.1
 
-Status: accepted, 2026-10-06. Inputs: [research](research.md).
+Status: accepted, 2026-10-06; Copilot target added 2026-10-09.
+Inputs: [research](research.md).
 
 ## One APM package
 
@@ -26,11 +27,18 @@ This is a tested byte-identical legal notice, not a second PostgreSQL rule sourc
 It has no instruction frontmatter and is not loaded as an always-on rule.
 
 APM install deploys Skills/rules; APM compile creates Codex root context.
-The package declares Codex, Claude and portable Agent Skills compatibility;
+The package declares Codex, Claude, Copilot and portable Agent Skills compatibility;
 APM intersects package restrictions with consumer target selection. Maintainer
-validation exercises these three targets;
-**consumers choose their own targets** explicitly. Codex and Claude can be tested
-from the same source without making either mandatory for consumers.
+validation exercises these four targets and combinations;
+**consumers choose their own targets** explicitly. All agents can be tested
+from the same source without making any mandatory for consumers.
+
+Copilot uses APM's existing `copilot` target, shared `.agents/skills/` and native
+`.github/instructions/*.instructions.md`, with no new Skill, adapter or dependency.
+Copilot-only consumers do not compile: 0.33.0's `--single-agents` mode would emit
+a redundant `AGENTS.md`. Combined Codex/Copilot consumers still need Codex context,
+which Copilot may also read; separate consumers can avoid overlap. Generated
+Copilot paths are ignored individually, leaving `.github/workflows/` as source.
 
 Generated roots, provider trees, caches, packed bundles and consumer locks in
 scratch projects are not committed. The root lock contains no external
