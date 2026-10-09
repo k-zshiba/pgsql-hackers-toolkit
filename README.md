@@ -22,7 +22,7 @@ Install directly from the remote repository in a separate workspace:
 ```bash
 mkdir my-postgresql-workspace
 cd my-postgresql-workspace
-apm install k-zshiba/pgsql-hackers-toolkit#dev --target codex
+apm install k-zshiba/pgsql-hackers-toolkit#v0.1.0 --target codex
 apm compile --single-agents --target codex
 export PG_SOURCE=/absolute/path/to/postgresql
 ```
@@ -31,10 +31,8 @@ APM creates `apm.yml` and `apm.lock.yaml`. Commit both to pin the resolved revis
 Choose `--target claude`, `--target copilot`, `--target agent-skills` or a
 combination such as `--target codex,copilot`; compile only when Codex is selected.
 
-The `v0.1.0` release is unpublished, so the example uses the `dev` branch.
-After publication, replace `#dev` with `#v0.1.0` for a tagged release.
 For local development, clone this repository beside the workspace and replace
-`k-zshiba/pgsql-hackers-toolkit#dev` with `../pgsql-hackers-toolkit`.
+`k-zshiba/pgsql-hackers-toolkit#v0.1.0` with `../pgsql-hackers-toolkit`.
 Use source packages; packed ZIP installation has
 [known limitations](docs/validation.md#apm-0330-constraints).
 

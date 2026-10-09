@@ -1,7 +1,7 @@
 # Validation
 
-Package verification: 2026-10-09; runtime/URL evidence: 2026-10-06.
-Unreleased v0.1.0, APM 0.33.0 and Python 3.11; temporary projects with isolated homes.
+Package verification: 2026-10-10; runtime/URL evidence: 2026-10-06.
+v0.1.0, APM 0.33.0 and Python 3.11; temporary projects with isolated homes.
 
 ## Recorded results
 
