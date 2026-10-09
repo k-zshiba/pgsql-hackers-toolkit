@@ -15,18 +15,19 @@ Licensed under the [PostgreSQL License](LICENSE).
 
 The canonical package is authored under `.apm/` and distributed with Microsoft's
 [Agent Package Manager](https://github.com/microsoft/apm). APM owns installation,
-lockfiles, integrity checking and target deployment. No parallel Codex/Claude
+lockfiles, integrity checking and target deployment. No parallel Codex/Claude/Copilot
 instruction sources or custom package manager are maintained.
 
 | Consumer target | APM-generated artifacts | Instruction loading |
 | --- | --- | --- |
 | Codex (`codex`) | `.agents/skills/`, `AGENTS.md` | Run `apm compile` after install |
 | Claude Code (`claude`) | `.claude/skills/`, `.claude/rules/` | Native rules; a generated CLAUDE.md is usually unnecessary |
+| GitHub Copilot (`copilot`) | `.agents/skills/`, `.github/instructions/` | Native `applyTo: "**"` rules installed by `apm install`; no compile required |
 | Other Agent Skills hosts (`agent-skills`) | `.agents/skills/` | Each Skill links to the common contract; the host must support loading linked files |
 
-Tested toolchain: **APM 0.33.0**, Python 3.11+. Codex/Claude deployment layouts
+Tested toolchain: **APM 0.33.0**, Python 3.11+. Codex/Claude/Copilot deployment layouts
 are checked against current official documentation. Read-only Codex runtime
-discovery was verified; authenticated Claude discovery and live LLM behavior
+discovery was verified; authenticated Claude/Copilot discovery and live LLM behavior
 remain optional manual checks. See
 [research and sources](docs/research.md) and [architecture](docs/architecture.md).
 
@@ -48,7 +49,7 @@ deployment files outside your patch tree. Put this `apm.yml` there:
 ```yaml
 name: my-postgresql-workspace
 version: 0.1.0
-targets: [codex]  # use [claude] or [codex, claude] as needed
+targets: [codex]  # also [claude], [copilot], or combinations
 dependencies:
   apm:
     - k-zshiba/pgsql-hackers-toolkit#v0.1.0
@@ -58,7 +59,7 @@ Then:
 
 ```bash
 apm install
-apm compile --single-agents
+apm compile --single-agents  # Codex only; omit for Claude/Copilot-only workspaces
 export PG_SOURCE=/absolute/path/to/your/postgresql
 ```
 
@@ -72,8 +73,10 @@ apm install --target codex
 apm compile --single-agents --target codex
 ```
 
-For Claude-only use, select `--target claude`; native rules are installed by
-`apm install`. For both, use `--target codex,claude`. APM may generate a root
+For Claude-only or Copilot-only use, select `--target claude` or `--target copilot`
+and omit compilation; native rules are installed by `apm install`.
+For combinations, use comma-separated targets, such as `--target codex,copilot`.
+Compile if Codex is selected. APM may generate a root
 context file only when needed. `--single-agents` keeps compilation in one small
 root file rather than distributed per-directory roots.
 
@@ -82,6 +85,27 @@ compilation; protect any hand-authored root instructions. Do not use `--force`
 to overwrite a collision. Installation adds `apm_modules/` to the consumer's
 `.gitignore`. Add generated provider files to your own ignore policy and exclude
 all toolkit artifacts from PostgreSQL patch attachments.
+
+### GitHub Copilot quick start
+
+Use the [Copilot consumer manifest](examples/copilot/apm.yml), with a local
+dependency until the release tag is available, and run:
+
+```bash
+apm install --target copilot
+```
+
+Open that consumer workspace in VS Code's Copilot agent mode, or start Copilot
+CLI there. In VS Code, pass the absolute checkout path in the task if its agent
+process does not inherit your shell's `PG_SOURCE`. Keep `apm_modules/` available
+for the Skills' links to the common contract.
+
+In Copilot CLI, inspect `/skills list` and `/instructions`; use `/skills reload`
+after installation. In VS Code, use Chat: Open Customizations to inspect Skills
+and Instructions. Invoke `/research-postgresql` or describe a core-development task.
+
+GitHub-hosted cloud/review sessions need their own APM setup and source access;
+a local install does not provision them.
 
 ## Quick start and checkout configuration
 
@@ -96,7 +120,7 @@ proposing a focused core patch. Do not modify source yet.
 ```
 
 Or explicitly invoke `research-postgresql` using your agent's Skill syntax.
-Codex supports `$research-postgresql`; Claude supports `/research-postgresql`.
+Codex supports `$research-postgresql`; Claude and Copilot support `/research-postgresql`.
 Verify available Skill names in the agent's UI and inspect its loaded context
 before relying on automatic routing. The integration suite verifies paths and
 contents; the optional Codex discovery check creates no model turn.
@@ -149,7 +173,7 @@ mutable tag is not by itself an integrity guarantee.
 
 ```bash
 apm install --frozen
-apm compile --single-agents
+apm compile --single-agents  # when Codex is selected
 apm audit --ci
 ```
 
@@ -173,7 +197,7 @@ In an isolated source copy, run frozen install and compile before
 metadata and integrity lock. APM 0.33.0's direct bundle installer leaves links
 from Skills to shared instructions broken. **Use Git/tag or native `.apm/`
 source package installation for this toolkit.** Packed ZIPs are inspected
-distribution artifacts, not a supported standalone Codex/Claude installation
+distribution artifacts, not a supported standalone agent installation
 path in this release.
 Legacy `--format apm` emits an empty bundle for this dependency-free package
 on 0.33.0; do not use it. A marketplace is optional discovery, not required.
@@ -211,7 +235,7 @@ python evals/grade.py --validate
 Tests run the pinned APM CLI in temporary author/consumer repositories with
 isolated child-process homes, without touching your global agent environment.
 They cover manifest compatibility, metadata/links, canonical-source discipline,
-pack contents/integrity, native Codex/Claude/portable deployment, idempotency, frozen
+pack contents/integrity, native Codex/Claude/Copilot/portable deployment, idempotency, frozen
 Git replay/ref drift, deployment drift and pruning. Default CI requires no API
 key and uploads the packed ZIP. It does not build PostgreSQL itself.
 

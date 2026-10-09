@@ -22,7 +22,7 @@ class APMTests(unittest.TestCase):
 
     def assert_deployment(self, consumer, targets):
         roots = []
-        if "codex" in targets or "agent-skills" in targets:
+        if {"codex", "copilot", "agent-skills"}.intersection(targets):
             roots.append(consumer / ".agents/skills")
         if "claude" in targets:
             roots.append(consumer / ".claude/skills")
@@ -51,6 +51,14 @@ class APMTests(unittest.TestCase):
             self.assertIn(body, rule.read_text())
             if (consumer / "CLAUDE.md").exists():
                 self.assertNotIn(body, (consumer / "CLAUDE.md").read_text())
+        copilot_rule = consumer / ".github/instructions/postgresql-contributor.instructions.md"
+        if "copilot" in targets:
+            self.assertEqual(copilot_rule.read_bytes(), CONTRACT.read_bytes())
+        else:
+            self.assertFalse(copilot_rule.exists())
+        # Copilot uses the shared Skills tree; no duplicate legacy deployment.
+        self.assertFalse((consumer / ".github/skills").exists())
+        self.assertFalse((consumer / ".github/copilot-instructions.md").exists())
         if "claude" not in targets:
             self.assertFalse((consumer / ".claude").exists())
             self.assertFalse((consumer / "CLAUDE.md").exists())
@@ -64,7 +72,7 @@ class APMTests(unittest.TestCase):
         self.sandbox.cli(self.source, "compile", "--dry-run")
         self.sandbox.cli(self.source, "install", "--frozen")
         self.sandbox.cli(self.source, "compile", "--single-agents")
-        self.assert_deployment(self.source, ["codex", "claude"])
+        self.assert_deployment(self.source, ["codex", "claude", "copilot"])
         self.sandbox.cli(self.source, "audit", "--ci")
         self.sandbox.cli(self.source, "pack", "--archive", "-o", "dist")
         archive = next((self.source / "dist").glob("*.zip"))
@@ -85,7 +93,9 @@ class APMTests(unittest.TestCase):
         self.assertEqual(lock, (fresh / "apm.lock.yaml").read_bytes())
 
     def test_local_consumers_and_idempotency(self):
-        for targets in (["codex"], ["claude"], ["codex", "claude"], ["agent-skills"]):
+        for targets in (["codex"], ["claude"], ["copilot"], ["agent-skills"],
+                        ["codex", "claude"], ["codex", "copilot"],
+                        ["claude", "copilot"], ["codex", "claude", "copilot"]):
             with self.subTest(targets=targets):
                 consumer = self.sandbox.consumer("consumer-" + "-".join(targets), targets, "../package")
                 self.sandbox.cli(consumer, "install")
@@ -114,10 +124,10 @@ class APMTests(unittest.TestCase):
 
     def test_git_frozen_replay_drift_and_prune(self):
         remote, commit = self.git_fixture()
-        consumer = self.sandbox.consumer("git-consumer", ["codex", "claude"], remote + "#v0.1.0")
+        consumer = self.sandbox.consumer("git-consumer", ["codex", "claude", "copilot"], remote + "#v0.1.0")
         self.sandbox.cli(consumer, "install")
         self.sandbox.cli(consumer, "compile", "--single-agents")
-        self.assert_deployment(consumer, ["codex", "claude"])
+        self.assert_deployment(consumer, ["codex", "claude", "copilot"])
         lock = load_yaml(consumer / "apm.lock.yaml")
         self.assertEqual(lock["dependencies"][0]["resolved_commit"], commit)
         before = deployed_snapshot(consumer)
@@ -137,21 +147,32 @@ class APMTests(unittest.TestCase):
         self.assertEqual(before, deployed_snapshot(consumer))
         manifest_path.write_bytes(original)
 
-        deployed = consumer / ".agents/skills/research-postgresql/SKILL.md"
-        preserved = deployed.read_bytes()
-        deployed.write_bytes(preserved + b"\nManual deployment edit.\n")
-        audit = self.sandbox.cli(consumer, "audit", "--ci", ok=False)
-        self.assertNotEqual(audit.returncode, 0)
-        deployed.write_bytes(preserved)
-        self.sandbox.cli(consumer, "audit", "--ci")
+        for relative in (".agents/skills/research-postgresql/SKILL.md",
+                         ".github/instructions/postgresql-contributor.instructions.md"):
+            with self.subTest(drift=relative):
+                deployed = consumer / relative
+                preserved = deployed.read_bytes()
+                deployed.write_bytes(preserved + b"\nManual deployment edit.\n")
+                audit = self.sandbox.cli(consumer, "audit", "--ci", ok=False)
+                self.assertNotEqual(audit.returncode, 0)
+                deployed.write_bytes(preserved)
+                self.sandbox.cli(consumer, "audit", "--ci")
 
         # Prune must remove owned artifacts and preserve unrelated user files.
         sentinel = consumer / ".claude/rules/user.md"
         sentinel.write_text("User-authored rule.\n")
+        workflow = consumer / ".github/workflows/user.yml"
+        workflow.parent.mkdir()
+        workflow.write_text("name: User-authored workflow\n")
+        user_rule = consumer / ".github/instructions/user.instructions.md"
+        user_rule.write_text('---\napplyTo: "**"\n---\nUser-authored rule.\n')
         manifest["dependencies"] = {}
         manifest_path.write_text(yaml.safe_dump(manifest, sort_keys=False))
         self.sandbox.cli(consumer, "prune")
         self.assertEqual(sentinel.read_text(), "User-authored rule.\n")
+        self.assertEqual(workflow.read_text(), "name: User-authored workflow\n")
+        self.assertEqual(user_rule.read_text(), '---\napplyTo: "**"\n---\nUser-authored rule.\n')
+        self.assertFalse((consumer / ".github/instructions/postgresql-contributor.instructions.md").exists())
         self.assertFalse((consumer / ".claude/rules/postgresql-contributor.md").exists())
         self.assertEqual(list((consumer / ".agents/skills").glob("*/SKILL.md")), [])
         self.assertEqual(list((consumer / ".claude/skills").glob("*/SKILL.md")), [])

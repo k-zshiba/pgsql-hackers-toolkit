@@ -1,0 +1,6 @@
+name: postgresql-copilot-workspace
+version: 0.1.0
+targets: [copilot]
+dependencies:
+  apm:
+    - k-zshiba/pgsql-hackers-toolkit#v0.1.0

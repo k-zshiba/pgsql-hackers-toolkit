@@ -144,7 +144,7 @@ class Sandbox:
 
 def deployed_snapshot(path):
     files = [path / "apm.lock.yaml", path / "AGENTS.md", path / "CLAUDE.md"]
-    for name in (".agents", ".claude", ".codex"):
+    for name in (".agents", ".claude", ".codex", ".github"):
         files.extend((path / name).rglob("*"))
     return {str(p.relative_to(path)): hashlib.sha256(p.read_bytes()).hexdigest()
             for p in files if p.is_file()}
