@@ -30,7 +30,10 @@ new aggregate diff; a `git range-diff` is useful for deliberately identified
 commit series but is not applicable to every uncommitted patch workflow.
 
 Review the revised patch and generate local versioned attachments only from the
-intended changes. Verify applicability, actual version/base and series ordering.
+intended changes using the shared
+[patch packaging](../implement-pg-patch/references/patch-packaging.md) procedure.
+Generate `git format-patch` attachments with real commit metadata and the correct
+revision number. Verify applicability, actual version/base and series ordering.
 Return a feedback ledger, material vN changes, exact validation and unresolved
 issues. Use prepare-pgsql-hackers-post for the reviewer response or revised
 submission draft. Do not claim full resolution when issues remain; preserve the

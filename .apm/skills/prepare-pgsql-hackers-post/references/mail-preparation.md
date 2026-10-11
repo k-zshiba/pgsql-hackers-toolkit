@@ -34,11 +34,11 @@ comment was addressed if part remains open. For review mail, focus on defects,
 questions and the tested environment; partial reviews can be useful.
 
 Before drafting patch creation commands, inspect existing commits and working
-changes. `git format-patch` for a deliberately selected commit range and a
-scoped diff for uncommitted work are different operations. Use the branch's
-current submission practice, a versioned filename and a separate output
-directory. Inspect attachment content and applicability after generating it.
-Never run a blanket diff over a tree containing other people's work.
+changes. Follow the shared patch-packaging reference linked from this Skill's
+`SKILL.md` for `git format-patch` attachments, including isolated packaging of
+uncommitted changes. Match the mail's version, base, author and attachment list
+to the actual files. Never run a blanket diff over a tree containing other
+people's work.
 
 The draft should contain no placeholder evidence presented as fact. Put missing
 facts in a note to the user, or explicitly describe the uncertainty in the mail.
