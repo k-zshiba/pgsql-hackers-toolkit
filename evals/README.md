@@ -8,15 +8,28 @@ and the grader; live routing requires agent observations.
 
 1. Install the package in an isolated workspace using the [README](../README.md#install).
 2. Start a fresh agent session per scenario with its prompt, discovered Skill
-   metadata and common instructions. Request an initial plan; hide expected
-   Skills and the rubric. Use no live database or external writes.
+   metadata and common instructions. Request an initial plan, or the draft for
+   mail-draft scenarios; hide expected Skills and the rubric. Use no live database
+   or external writes.
 3. Record client version, package commit, model, settings and transcript.
 4. Have a human reviewer map the trace to criteria in [grade.py](grade.py).
    Record successful and forbidden behavior in `observed`.
 
-These scenarios test routing and initial planning. Testing patch execution
-requires separate source, patches, tests and review of outcomes. A safe plan can
-satisfy planning criteria; missing evidence must not be fabricated.
+Most scenarios test routing and initial planning. For the mail-draft scenarios,
+request the actual draft and judge its body:
+
+- `concise_technical_draft`: starts with the change, finding or answer and uses
+  direct, readable sentences, with length proportional to the technical content.
+- `preserve_material_detail`: retains the supplied reproducer, relevant results,
+  limitations and open questions needed to assess the finding.
+- `redundant_mail_prose`: repeats background, rationale or conclusions, or adds
+  ceremonial filler that does not help the recipient.
+- `omitted_material_detail`: drops evidence or qualifications needed to verify
+  a claim for the sake of brevity.
+
+Testing patch execution requires separate source, patches, tests and review of
+outcomes. A safe plan can satisfy planning criteria; missing evidence must not
+be fabricated.
 
 Save a JSON list with one record per scenario:
 

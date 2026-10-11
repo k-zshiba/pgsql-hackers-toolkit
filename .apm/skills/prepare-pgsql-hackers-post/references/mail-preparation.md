@@ -11,6 +11,17 @@ quotations to the point being answered. Respond below the relevant passage.
 Do not turn a small technical reply into a long summary of the entire project.
 Email bodies should be readable as plain text; avoid decorative Markdown.
 
+For a small reply, a few short paragraphs usually suffice. Use bullets or
+headings only when they make several findings or changes easier to follow; do
+not give every draft the same sections. Cut phrases such as "I would like to",
+"it is worth noting that" and "as mentioned above"; state the fact directly.
+For example, write "v2 releases the buffer on the error path" rather than
+"I would like to provide an updated version of the patch which now addresses
+the issue that was previously discussed regarding buffer cleanup."
+Before returning the draft, remove sentences that repeat another sentence or
+the quoted thread. Preserve reproducers, relevant results, compatibility concerns
+and open questions; brevity should not make a technical claim harder to verify.
+
 A submission often needs these facts, in natural prose rather than a mandatory
 form: what is wrong, what changes, why this approach, how to reproduce/test,
 and what still needs discussion. Include base revision and patch version when

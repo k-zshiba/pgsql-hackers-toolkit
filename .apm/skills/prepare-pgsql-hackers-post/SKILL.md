@@ -7,8 +7,9 @@ description: Draft a pgsql-hackers initial core proposal, patch submission, revi
 
 Read the [common contributor contract](../../instructions/postgresql-contributor.instructions.md).
 Load [mail preparation](references/mail-preparation.md) for the chosen message
-type. Establish audience, existing thread/Message-ID, patch version/base,
-verified behavior, validation evidence and unresolved questions.
+type. Establish audience and existing thread/Message-ID. Gather patch version/base,
+verified behavior, validation evidence and unresolved questions as relevant to
+that message.
 
 Read recent relevant pgsql-hackers messages and the current submission/review
 guidance. Preserve the thread and reply context when responding. Use plain,
@@ -26,10 +27,17 @@ Select what the recipient needs:
 - Review/response: concrete findings or point-by-point technical replies with
   reproducer/evidence; distinguish questions, addressed feedback and disagreement.
 
+Lead with the problem, change or answer. Use short sentences, concrete terms and
+direct verbs. Include the details above only when they help the recipient assess
+the patch or answer a question; they are not a template to fill. Omit ceremonial
+introductions, filler, repeated rationale and closing summaries. In replies,
+assume the reader knows the thread and discuss only the relevant new points.
+Keep evidence and material limitations even when they require a longer message.
+
 Verify local attachments match the described version and intended diff. Do not
 guess filenames, generate a patch containing unrelated work, or include private
-logs/credentials. If no tested patch is available, clearly frame the message as
-an early proposal/WIP and explain what evidence is missing.
+logs/credentials. For submissions without a tested patch, clearly frame the
+message as an early proposal/WIP and explain what evidence is missing.
 
 Return the draft subject/body and attachment list, with any factual gaps outside
 the draft. Do not send email, post to the list, register/update CommitFest or
