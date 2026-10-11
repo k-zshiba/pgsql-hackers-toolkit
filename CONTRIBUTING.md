@@ -74,11 +74,22 @@ compatible additions are minor releases.
 2. Run tests and eval validation; review the final diff, archive contents and links.
 3. Merge the release preparation into `main` through a pull request and verify CI
    passes for the merged commit.
-4. Prepare the immutable tag on that commit and the release description. Obtain
-   explicit authorization before pushing tags, uploading assets or publishing
-   to a marketplace.
+4. Prepare the immutable `vMAJOR.MINOR.PATCH` tag on that commit. Obtain explicit
+   authorization before pushing tags: a tag push runs validation and automatically
+   publishes a GitHub Release with the tag as its title and commit summaries as
+   its body. Uploading assets or publishing to a marketplace also requires
+   explicit authorization.
 5. Test the published tag from a fresh consumer and replay its committed lock with
    a cold `apm install --frozen`. Local fixtures cannot prove public availability.
+
+The release job in `.github/workflows/validate.yml` runs only for tag pushes and
+only after validation succeeds. It accepts numeric `vMAJOR.MINOR.PATCH` tags
+without leading zeros. Notes list commit subjects and links since the highest
+lower version tag reachable from the new tag; an initial release lists its full
+history. Tags on unrelated branches and prerelease tags are excluded as bases.
+Rerunning a tag workflow preserves an existing Release. A transient publication
+failure can be retried by rerunning the tag workflow. This applies
+to tags containing the workflow change; existing releases remain as published.
 
 ## Dependencies and review
 
