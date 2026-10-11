@@ -36,7 +36,9 @@ Keep evidence and material limitations even when they require a longer message.
 
 Verify local attachments match the described version and intended diff. Do not
 guess filenames, generate a patch containing unrelated work, or include private
-logs/credentials. For submissions without a tested patch, clearly frame the
+logs/credentials. When creating attachments, follow the shared
+[patch packaging](../implement-pg-patch/references/patch-packaging.md) procedure.
+For submissions without a tested patch, clearly frame the
 message as an early proposal/WIP and explain what evidence is missing.
 
 Return the draft subject/body and attachment list, with any factual gaps outside

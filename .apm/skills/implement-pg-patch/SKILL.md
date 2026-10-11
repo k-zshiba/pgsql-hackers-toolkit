@@ -32,6 +32,7 @@ edits. Existing unrelated work remains untouched.
 
 Return a change summary tied to behavior, evidence locations, exact validation
 and remaining limitations. Use review-pg-patch before preparation for submission.
-Create local patch files only from the intended changes and inspect their contents;
-do not include user changes, deployment artifacts, build output or secrets.
-Do not commit, send or publish unless that action was authorized.
+When a patch file is requested, follow [patch packaging](references/patch-packaging.md)
+to generate a versioned `git format-patch` attachment with genuine commit metadata.
+Include only the intended changes; inspect the attachment and its applicability.
+Do not commit in the user's checkout, send or publish unless that action was authorized.
