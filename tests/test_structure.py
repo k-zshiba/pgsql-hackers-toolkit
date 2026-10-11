@@ -84,11 +84,12 @@ class StructureTests(unittest.TestCase):
             self.assertFalse(path.is_symlink(), path)
 
     def test_example_manifests_use_release_and_targets(self):
+        version = load_yaml(ROOT / "apm.yml")["version"]
         for path in (ROOT / "examples").glob("*/apm.yml"):
             manifest = load_yaml(path)
             APMPackage.from_apm_yml(path, create_config=False)
             self.assertEqual(manifest["dependencies"]["apm"],
-                             ["k-zshiba/pgsql-hackers-toolkit#v0.1.0"])
+                             [f"k-zshiba/pgsql-hackers-toolkit#v{version}"])
             self.assertTrue(set(manifest["targets"]) <= {"codex", "claude", "copilot", "agent-skills"})
         copilot = load_yaml(ROOT / "examples/copilot/apm.yml")
         self.assertEqual(copilot["targets"], ["copilot"])
