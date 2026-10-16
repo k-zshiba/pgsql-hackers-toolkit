@@ -19,6 +19,7 @@ SKILLS = {
     "revise-pg-patch",
 }
 CONTRACT = ROOT / ".apm/instructions/postgresql-contributor.instructions.md"
+MAINTAINER_SKILL = Path(".agents/skills/release-pgsql-hackers-toolkit")
 APM_VERSION = "0.33.0"
 
 
@@ -97,6 +98,7 @@ def copy_source(destination):
     for name in ("apm.yml", "apm.lock.yaml", "README.md", "LICENSE", "CHANGELOG.md"):
         shutil.copy2(ROOT / name, destination / name)
     shutil.copytree(ROOT / ".apm", destination / ".apm")
+    shutil.copytree(ROOT / MAINTAINER_SKILL, destination / MAINTAINER_SKILL)
     return destination
 
 

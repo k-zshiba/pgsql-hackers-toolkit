@@ -10,7 +10,7 @@ import zipfile
 
 import yaml
 
-from support import CONTRACT, ROOT, SKILLS, Sandbox, check_links, copy_source, deployed_snapshot, frontmatter, load_yaml
+from support import CONTRACT, MAINTAINER_SKILL, ROOT, SKILLS, Sandbox, check_links, copy_source, deployed_snapshot, frontmatter, load_yaml
 
 
 class APMTests(unittest.TestCase):
@@ -20,15 +20,19 @@ class APMTests(unittest.TestCase):
         self.sandbox = Sandbox(self.temp.name)
         self.source = copy_source(Path(self.temp.name) / "package")
 
-    def assert_deployment(self, consumer, targets):
+    def assert_deployment(self, consumer, targets, maintainer=False):
         roots = []
         if {"codex", "copilot", "agent-skills"}.intersection(targets):
             roots.append(consumer / ".agents/skills")
         if "claude" in targets:
             roots.append(consumer / ".claude/skills")
         for root in roots:
-            self.assertEqual({p.parent.name for p in root.glob("*/SKILL.md")}, SKILLS)
-            self.assertEqual(check_links(root.rglob("*.md"), consumer), [])
+            expected = SKILLS | ({MAINTAINER_SKILL.name}
+                                 if maintainer and root.parent.name == ".agents" else set())
+            self.assertEqual({p.parent.name for p in root.glob("*/SKILL.md")}, expected)
+            package_docs = [p for p in root.rglob("*.md")
+                            if p.relative_to(root).parts[0] != MAINTAINER_SKILL.name]
+            self.assertEqual(check_links(package_docs, consumer), [])
             for source in (ROOT / ".apm/skills").glob("*/SKILL.md"):
                 dest = root / source.parent.name / "SKILL.md"
                 self.assertEqual(frontmatter(source)[0], frontmatter(dest)[0])
@@ -72,7 +76,9 @@ class APMTests(unittest.TestCase):
         self.sandbox.cli(self.source, "compile", "--dry-run")
         self.sandbox.cli(self.source, "install", "--frozen")
         self.sandbox.cli(self.source, "compile", "--single-agents")
-        self.assert_deployment(self.source, ["codex", "claude", "copilot"])
+        self.assert_deployment(self.source, ["codex", "claude", "copilot"], maintainer=True)
+        self.assertEqual((self.source / MAINTAINER_SKILL / "SKILL.md").read_bytes(),
+                         (ROOT / MAINTAINER_SKILL / "SKILL.md").read_bytes())
         self.sandbox.cli(self.source, "audit", "--ci")
         self.sandbox.cli(self.source, "pack", "--archive", "-o", "dist")
         archive = next((self.source / "dist").glob("*.zip"))
@@ -85,6 +91,7 @@ class APMTests(unittest.TestCase):
             metadata_name = next(name for name in names if name.endswith("plugin.json"))
             self.assertEqual(json.loads(packed.read(metadata_name))["license"], "PostgreSQL")
             self.assertFalse(any("apm_modules/" in name for name in names))
+            self.assertFalse(any(MAINTAINER_SKILL.name in name for name in names))
         # Lock generation alone must reproduce the committed empty closure.
         fresh = Path(self.temp.name) / "lock-only"
         fresh.mkdir()
@@ -166,6 +173,11 @@ class APMTests(unittest.TestCase):
         workflow.write_text("name: User-authored workflow\n")
         user_rule = consumer / ".github/instructions/user.instructions.md"
         user_rule.write_text('---\napplyTo: "**"\n---\nUser-authored rule.\n')
+        shutil.copytree(ROOT / MAINTAINER_SKILL, consumer / MAINTAINER_SKILL)
+        maintenance_bytes = (consumer / MAINTAINER_SKILL / "SKILL.md").read_bytes()
+        self.sandbox.cli(consumer, "install", "--frozen")
+        self.sandbox.cli(consumer, "compile", "--single-agents")
+        self.assertEqual((consumer / MAINTAINER_SKILL / "SKILL.md").read_bytes(), maintenance_bytes)
         manifest["dependencies"] = {}
         manifest_path.write_text(yaml.safe_dump(manifest, sort_keys=False))
         self.sandbox.cli(consumer, "prune")
@@ -174,19 +186,23 @@ class APMTests(unittest.TestCase):
         self.assertEqual(user_rule.read_text(), '---\napplyTo: "**"\n---\nUser-authored rule.\n')
         self.assertFalse((consumer / ".github/instructions/postgresql-contributor.instructions.md").exists())
         self.assertFalse((consumer / ".claude/rules/postgresql-contributor.md").exists())
-        self.assertEqual(list((consumer / ".agents/skills").glob("*/SKILL.md")), [])
+        self.assertEqual(list((consumer / ".agents/skills").glob("*/SKILL.md")),
+                         [consumer / MAINTAINER_SKILL / "SKILL.md"])
         self.assertEqual(list((consumer / ".claude/skills").glob("*/SKILL.md")), [])
         # Prune leaves compiled roots; recompilation must remove obsolete context.
         body = frontmatter(CONTRACT)[1].strip()
         self.assertIn(body, (consumer / "AGENTS.md").read_text())
         self.sandbox.cli(consumer, "compile", "--single-agents")
         self.assertNotIn(body, (consumer / "AGENTS.md").read_text())
+        self.assertEqual((consumer / MAINTAINER_SKILL / "SKILL.md").read_bytes(), maintenance_bytes)
 
     def test_packed_contents_and_tamper_rejection(self):
         self.sandbox.cli(self.source, "install", "--frozen")
         self.sandbox.cli(self.source, "compile", "--single-agents")
         self.sandbox.cli(self.source, "pack", "-o", "dist")
         bundle = next(p for p in (self.source / "dist").iterdir() if p.is_dir())
+        self.assertFalse(any(MAINTAINER_SKILL.name in str(p.relative_to(bundle))
+                             for p in bundle.rglob("*")))
         self.assertEqual(check_links(bundle.rglob("*.md"), bundle), [])
         lock = load_yaml(bundle / "apm.lock.yaml")
         for relative, digest in lock["pack"]["bundle_files"].items():

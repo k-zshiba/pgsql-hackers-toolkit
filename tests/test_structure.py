@@ -6,7 +6,7 @@ import unittest
 from apm_cli.models.apm_package import APMPackage
 from apm_cli.core.errors import UnknownTargetError
 
-from support import APM_VERSION, CONTRACT, ROOT, SKILLS, check_links, frontmatter, load_yaml
+from support import APM_VERSION, CONTRACT, MAINTAINER_SKILL, ROOT, SKILLS, check_links, frontmatter, load_yaml
 
 
 class StructureTests(unittest.TestCase):
@@ -72,16 +72,35 @@ class StructureTests(unittest.TestCase):
         for folder in (".apm", "docs", "examples", "evals"):
             paths.extend((ROOT / folder).rglob("*.md"))
         paths.extend(ROOT.glob("*.md"))
+        paths.extend((ROOT / MAINTAINER_SKILL).rglob("*.md"))
         self.assertEqual(check_links(paths, ROOT), [])
         self.assertEqual({p.name for p in (ROOT / ".apm").iterdir()}, {"skills", "instructions"})
         self.assertEqual(len(list((ROOT / ".apm/instructions").glob("*.instructions.md"))), 1)
         tracked = subprocess.run(["git", "ls-files", "-z"], cwd=ROOT,
                                  capture_output=True, check=True).stdout.decode().split("\0")
         for path in tracked:
+            if path.startswith(MAINTAINER_SKILL.as_posix() + "/"):
+                continue
             self.assertFalse(re.match(r"^(AGENTS.md|CLAUDE.md|plugin.json|apm_modules/|build/|dist/|\.agents/|\.claude/|\.codex/|\.claude-plugin/|\.codex-plugin/)", path), path)
             self.assertFalse(re.match(r"^\.github/(copilot-instructions\.md|instructions/|skills/|agents/|prompts/|hooks/)", path), path)
         for path in (ROOT / ".apm").rglob("*"):
             self.assertFalse(path.is_symlink(), path)
+
+    def test_maintenance_skill_metadata_and_ignore_boundary(self):
+        metadata, body = frontmatter(ROOT / MAINTAINER_SKILL / "SKILL.md")
+        self.assertEqual(metadata["name"], MAINTAINER_SKILL.name)
+        self.assertEqual(set(metadata), {"name", "description"})
+        self.assertTrue(1 <= len(metadata["description"]) <= 1024)
+        self.assertNotIn(metadata["name"], SKILLS)
+        self.assertNotRegex(body, r"TODO|\[INSERT|!`")
+        ignored = {".agents/skills/research-postgresql/SKILL.md",
+                   ".agents/skills/another-maintainer/SKILL.md", ".agents/state.json"}
+        visible = {str(MAINTAINER_SKILL / "SKILL.md"),
+                   str(MAINTAINER_SKILL / "references/check.md")}
+        result = subprocess.run(["git", "check-ignore", "--no-index", "--stdin"],
+                                cwd=ROOT, input="\n".join(sorted(ignored | visible)) + "\n",
+                                text=True, capture_output=True, check=True)
+        self.assertEqual(set(result.stdout.splitlines()), ignored)
 
     def test_example_manifests_use_release_and_targets(self):
         version = load_yaml(ROOT / "apm.yml")["version"]

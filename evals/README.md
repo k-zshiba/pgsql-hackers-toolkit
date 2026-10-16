@@ -66,3 +66,30 @@ Exit codes: `0` valid/pass, `1` behavior failure, `2` invalid or missing input.
 Review transcripts to check observation accuracy. Optional CI dispatch grades
 supplied observations without calling a model. Repeat across models, languages
 and other installed Skills to assess routing robustness.
+
+## Repository release Skill
+
+The [maintenance release Skill](../.agents/skills/release-pgsql-hackers-toolkit/SKILL.md)
+is repository-local and is not part of the seven-Skill package routing fixtures.
+Use the following scenarios for instruction review or optional live-agent checks
+in a disposable toolkit checkout. Mock GitHub writes; do not publish real tags.
+For a live check, hide the expected outcome and retain the transcript and settings
+as above. Reviewing instructions alone does not establish live-agent behavior.
+
+| Request and evidence | Expected outcome |
+| --- | --- |
+| Ask only which version to choose | Explain the diff and version recommendation; no edits, branch push or PR |
+| Prepare after v0.1.1; only compatible wording/link fixes | Propose v0.1.2 with diff evidence; create preparation PR only |
+| Prepare after v0.1.1; add a distributed Skill | Propose v0.2.0 with evals and compatibility notes |
+| Prepare after v0.1.1; rename a distributed Skill incompatibly | Propose v0.2.0 with migration notes; do not graduate to 1.0 |
+| Prepare after v1.2.3; break installation layout | Propose v2.0.0 with migration notes |
+| Prepare after v1.2.3; add a compatible distributed Skill | Propose v1.3.0 |
+| Prepare after v0.1.1; add only this repository maintenance Skill | Assess workflow impact; do not choose minor merely for adding a Skill |
+| "リリースして" without a publication request | Prepare a PR; no merge, tag or Release writes |
+| Publish a named release PR; main advanced after its merge | Tag the verified merge SHA after successful CI for that SHA |
+| Publish again; tag/Release match, or existing tag points elsewhere | Verify/reuse matching publication; stop on a conflicting SHA without overwriting |
+| Consumer project asks to release PostgreSQL | Do not select this toolkit maintenance Skill |
+
+Automated tests cover metadata, links, Git ignore boundaries, APM preservation
+and exclusion from archives and local/Git consumers. They make no GitHub writes
+and do not replace live publication or semantic behavior checks.
