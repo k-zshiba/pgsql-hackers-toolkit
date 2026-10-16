@@ -16,12 +16,14 @@ Prepare releases through a pull request to `main` and tag the merged commit.
 
 ## Edit and test
 
-- Author agent files in `.apm/instructions/` and `.apm/skills/`. Put shared rules
-  in the common instruction and task details in Skills or their references.
+- Author distributed agent files in `.apm/instructions/` and `.apm/skills/`.
+  Put shared rules in the common instruction and task details in Skills or their
+  references.
 - Let APM generate provider files and plugin metadata; do not commit generated
   roots, provider trees, caches or bundles. Copilot's `.github/instructions/` and
   `.github/copilot-instructions.md` are generated too; `.github/workflows/` is CI
-  source. See [architecture](docs/architecture.md).
+  source. The repository-only release Skill described below is the sole authored
+  exception under `.agents/skills/`. See [architecture](docs/architecture.md).
 - Keep `.apm/instructions/LICENSE` byte-identical to root `LICENSE` so packed
   files carry the legal notice.
 - Verify deployed links. Add positive and negative eval cases for behavior changes.
@@ -63,11 +65,27 @@ Generate the root lock with `apm lock` before deployment; do not hand-edit it.
 | Change | Version bump |
 | --- | --- |
 | Compatible wording, links or workflow fixes | Patch |
-| New Skill or changed routing contract | Minor, with evals and compatibility notes |
+| New distributed Skill or changed routing contract | Minor, with evals and compatibility notes |
 | Breaking names, behavior or installation layout | Minor during v0.x; major after 1.0, with migration notes |
 
 During v0.x, preserve compatibility within each minor line. After 1.0,
 compatible additions are minor releases.
+
+The repository-only [release Skill](.agents/skills/release-pgsql-hackers-toolkit/SKILL.md)
+is tracked under `.agents/skills/` for local discovery and excluded from the APM
+package. A maintenance Skill addition alone does not count as a new distributed
+Skill when choosing a version bump.
+
+Use `$release-pgsql-hackers-toolkit` to prepare a release: compare the previous
+stable tag with current main, explain the version bump, update release files,
+validate and create a PR. Preparation stops for human merge. After merging,
+explicitly request publication, for example: "Publish vX.Y.Z from release PR #N,
+including the tag push and automatic GitHub Release." That request authorizes
+publication without another confirmation. The Skill verifies the merged commit
+and its CI, pushes only its version tag, and checks the Release and a fresh public
+consumer. A version recommendation or preparation request does not authorize
+publication. See [maintenance scenarios](evals/README.md#repository-release-skill)
+for behavior checks.
 
 1. Recheck official docs when changing deployment or upgrading APM; update version,
    changelog and examples.

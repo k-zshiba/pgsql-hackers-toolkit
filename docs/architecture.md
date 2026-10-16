@@ -13,11 +13,18 @@ load task-specific references as needed.
 | `apm.yml`, `apm.lock.yaml` | Package metadata and generated dependency lock |
 | `.apm/instructions/` | Shared rules and a copy of the license for packing |
 | `.apm/skills/` | Workflows and local references |
+| `.agents/skills/release-pgsql-hackers-toolkit/` | Repository-only release maintenance Skill |
 | `docs/`, `examples/` | Sources, validation and usage |
 | `tests/`, `evals/`, `.github/workflows/` | Package checks and behavioral evaluation |
 
-`.apm/` is the only authored agent source. APM deploys files and rewrites links;
-generated provider trees, root instructions, caches and bundles are not committed.
+`.apm/` is the authored source for distributed agent files. APM deploys files and
+rewrites links; generated provider trees, root instructions, caches and bundles
+are not committed. The sole exception under `.agents/skills/` is the authored
+[release maintenance Skill](../.agents/skills/release-pgsql-hackers-toolkit/SKILL.md),
+tracked for local discovery after cloning this repository. It is outside manifest
+`includes`, excluded from archives and consumer deployment, and preserved by APM
+install, compile and prune. Tests enforce these boundaries. Release preparation
+creates a PR; explicit publication after human merge uses the existing tag CI.
 The copied license must match root `LICENSE`; APM's pack allowlist excludes the root file.
 
 | Target | Installation output |

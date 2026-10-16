@@ -1,8 +1,11 @@
-# APM deployment is generated from .apm/, never authored here.
+# APM deployment is generated from .apm/; the release Skill is maintained locally.
 /apm_modules/
 /AGENTS.md
 /CLAUDE.md
-/.agents/
+/.agents/*
+!/.agents/skills/
+/.agents/skills/*
+!/.agents/skills/release-pgsql-hackers-toolkit/
 /.claude/
 /.codex/
 /.github/copilot-instructions.md
