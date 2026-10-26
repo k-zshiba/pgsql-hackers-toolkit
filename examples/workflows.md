@@ -18,6 +18,18 @@ Design scope, defaults, semantics, compatibility and tests. Draft open
 questions for pgsql-hackers before substantial implementation.
 ```
 
+## Find a topic for design practice
+
+```text
+Use research-postgresql in /path/to/postgresql to find bounded core refactoring
+or feature topics for architecture design practice. Investigate change
+propagation, duplication and variation, extension cost, state/lifetime and
+testability. Ground candidates in source, change history and prior discussions.
+Compare the design decisions they expose, constraints and validation options,
+including keeping the current structure. Recommend a manageable starting topic
+and identify missing evidence; do not change the code yet.
+```
+
 ## CommitFest review
 
 ```text
