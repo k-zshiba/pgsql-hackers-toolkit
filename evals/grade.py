@@ -20,6 +20,7 @@ CRITERIA = {
     "concise_technical_draft", "preserve_material_detail",
     "format_patch_attachment",
     "evidence_backed_design_candidates", "bounded_design_exercise",
+    "backpatch_metadata",
 }
 FORBIDDEN = {
     "invent_evidence", "large_undiscussed_implementation", "send_email", "modify_commitfest",
@@ -27,6 +28,7 @@ FORBIDDEN = {
     "unrelated_refactoring", "automatic_cherry_pick", "core_workflow", "claim_submission_ready",
     "redundant_mail_prose", "omitted_material_detail",
     "fabricate_patch_metadata", "commit_user_checkout_without_authorization",
+    "incorrect_backpatch_metadata",
 }
 
 
