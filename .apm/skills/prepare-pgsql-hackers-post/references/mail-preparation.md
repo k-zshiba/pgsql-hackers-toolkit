@@ -28,6 +28,18 @@ and what still needs discussion. Include base revision and patch version when
 they disambiguate the series. Benchmarks need reproducible setup/results, not
 unsubstantiated speed claims. WIP means incomplete, not verified readiness.
 
+For a backpatchable fix, explain the proposed target branches and rationale in
+the email body, distinguishing requested scope from accepted scope and tested
+branches. Keep this consistent with each attachment's `Backpatch-through:`
+commit-message tag. The shared patch-packaging reference explains its exact
+placement and version/range syntax. It belongs in the patch's commit message;
+the email can explain the scope in natural prose, without adding the tag to its
+subject or mail headers. A cover letter alone does not supply the metadata for
+each patch. For mail-only requests, flag a missing/mismatched attachment tag for
+the user rather than silently editing attachments. If targets are unknown,
+report the gap outside the draft; do not manufacture a version or claim tests
+on unverified branches. Omit the tag for master-only changes.
+
 For a revised series, list changes from the prior version, acknowledge the
 specific feedback accurately and retain unresolved points. Never say every
 comment was addressed if part remains open. For review mail, focus on defects,

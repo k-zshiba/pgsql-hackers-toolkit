@@ -21,7 +21,9 @@ Select what the recipient needs:
 - Initial proposal: observed problem, current/desired semantics, alternatives and
   questions seeking design feedback, before a large nontrivial implementation.
 - Submission: problem, behavior change, rationale, version/base, patch series,
-  docs/tests, actual validation and remaining limitations.
+  docs/tests, actual validation and remaining limitations. For backpatchable
+  fixes, explain the target scope and check the attachment's `Backpatch-through:`
+  commit-message tag using the shared patch-packaging reference below.
 - Revision: material changes since the prior version, responses linked to
   feedback, exact attachments and still-open issues.
 - Review/response: concrete findings or point-by-point technical replies with

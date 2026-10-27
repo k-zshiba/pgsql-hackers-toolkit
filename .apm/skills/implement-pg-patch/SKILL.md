@@ -35,4 +35,6 @@ and remaining limitations. Use review-pg-patch before preparation for submission
 When a patch file is requested, follow [patch packaging](references/patch-packaging.md)
 to generate a versioned `git format-patch` attachment with genuine commit metadata.
 Include only the intended changes; inspect the attachment and its applicability.
+For backpatchable fixes, include the assessed `Backpatch-through:` tag in the
+commit message as described there; omit it for master-only changes.
 Do not commit in the user's checkout, send or publish unless that action was authorized.
