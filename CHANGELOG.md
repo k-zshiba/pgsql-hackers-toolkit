@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.0 — 2026-10-27
+
+- Expand research Skill routing to include evidence-backed refactoring and feature
+  topics for architecture design practice, with a focused investigation guide.
+- Document `Backpatch-through:` placement, target-version syntax and consistency
+  between patch commit messages and submission email drafts.
+- Add evaluation scenarios for design-topic research and backpatch metadata,
+  including application-scope exclusions and unknown target branches.
+- Retain the seven Skill names and installation layout; no migration is required.
+
 ## 0.1.2 — 2026-10-16
 
 - Clarify versioned `git format-patch` commands, generated filenames and diffstats,

@@ -22,7 +22,7 @@ Install directly from the remote repository in a separate workspace:
 ```bash
 mkdir my-postgresql-workspace
 cd my-postgresql-workspace
-apm install k-zshiba/pgsql-hackers-toolkit#v0.1.2 --target codex
+apm install k-zshiba/pgsql-hackers-toolkit#v0.2.0 --target codex
 apm compile --single-agents --target codex
 export PG_SOURCE=/absolute/path/to/postgresql
 ```
@@ -32,7 +32,7 @@ Choose `--target claude`, `--target copilot`, `--target agent-skills` or a
 combination such as `--target codex,copilot`; compile only when Codex is selected.
 
 For local development, clone this repository beside the workspace and replace
-`k-zshiba/pgsql-hackers-toolkit#v0.1.2` with `../pgsql-hackers-toolkit`.
+`k-zshiba/pgsql-hackers-toolkit#v0.2.0` with `../pgsql-hackers-toolkit`.
 Use source packages; packed ZIP installation has
 [known limitations](docs/validation.md#apm-0330-constraints).
 
