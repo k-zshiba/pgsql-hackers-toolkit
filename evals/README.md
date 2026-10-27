@@ -31,6 +31,17 @@ Testing patch execution requires separate source, patches, tests and review of
 outcomes. A safe plan can satisfy planning criteria; missing evidence must not
 be fabricated.
 
+For design-topic research, review these criteria from the investigation plan
+or findings, according to the source context available:
+
+- `evidence_backed_design_candidates`: connects candidate problems to source,
+  representative changes and prior discussion, or explains how to obtain that
+  evidence. Considers change propagation, duplication/variation, extension cost,
+  state/lifetime and testability where relevant; code shape alone is insufficient.
+- `bounded_design_exercise`: identifies manageable scope, constraints, a design
+  choice with plausible alternatives including the current structure, validation
+  and missing evidence. Keeps topic discovery separate from implementation.
+
 For patch-packaging scenarios, `format_patch_attachment` requires a plan to use
 `git format-patch` from the intended real commits, with the requested version and
 verified author identity. Uncommitted changes must be packaged in an isolated

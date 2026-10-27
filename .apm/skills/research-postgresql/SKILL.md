@@ -1,6 +1,6 @@
 ---
 name: research-postgresql
-description: Investigate PostgreSQL upstream/core source, planner bugs, internals hypotheses, git history, pgsql-hackers discussions or CommitFest proposals. Use to find implementation locations and verify behavior before a core patch. Do not use for SQL syntax help, application queries, routine slow-query tuning or database administration.
+description: Investigate PostgreSQL upstream/core source, planner bugs, internals hypotheses, git history, pgsql-hackers discussions or CommitFest proposals. Use to find implementation locations, verify behavior before a core patch, or identify evidence-backed refactoring and feature topics for architecture design practice. Do not use for SQL syntax help, application queries, routine slow-query tuning or database administration.
 ---
 
 # Research PostgreSQL
@@ -9,6 +9,11 @@ Read the [common contributor contract](../../instructions/postgresql-contributor
 Establish the actual checkout/revision and the question being answered. For
 primary-source navigation, consult [source discovery](references/source-discovery.md)
 only when source/history/list discovery is needed.
+
+When asked to find refactoring or feature topics for design practice, use
+[design opportunity research](references/design-opportunities.md). Ground
+candidates in concrete change difficulties and existing constraints; keep topic
+discovery separate from choosing a design or implementing it.
 
 1. Separate the observed symptom from the suggested explanation. For a bug,
    obtain or build a minimal reproducer and record version/configuration. A
