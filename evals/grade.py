@@ -19,6 +19,7 @@ CRITERIA = {
     "request_source_context", "distinguish_unknown",
     "concise_technical_draft", "preserve_material_detail",
     "format_patch_attachment",
+    "evidence_backed_design_candidates", "bounded_design_exercise",
     "backpatch_metadata",
 }
 FORBIDDEN = {
